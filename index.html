@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amoo Academy - Professional Skills in Ethiopia</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Header Render Target -->
+  <header id="main-header"></header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-28 border-b border-gray-100 dark:border-slate-800/50">
+    <!-- Gradient background effects -->
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.green.100),theme(colors.transparent))] opacity-50 dark:opacity-20"></div>
+    <div class="absolute top-0 right-1/4 -z-10 h-72 w-72 rounded-full bg-green-400/20 dark:bg-green-500/10 blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Left Column: Content -->
+        <div class="lg:col-span-7 flex flex-col gap-6 lg:gap-8 text-center lg:text-left">
+          <!-- Flag Ribbon Badge -->
+          <div class="inline-flex self-center lg:self-start items-center gap-2 px-3 py-1.5 rounded-full ethiopian-badge text-xs font-bold text-green-700 dark:text-green-400">
+            <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+            Empowering Ethiopian Youth
+            <span class="text-yellow-600 dark:text-yellow-400 font-extrabold font-mono">200 ETB / Course</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight font-display">
+            Master Premium Digital Skills with <span class="text-green-600 dark:text-green-400">AMOO ACADEMY</span>
+          </h1>
+
+          <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            Launch your high-paying professional career with localized expert training based in Harar, Ethiopia. All interactive courses are set at a flat, accessible rate of <strong class="text-gray-900 dark:text-white">200 ETB only</strong>. Gain certificates, complete local exercises, and build a spectacular portfolio.
+          </p>
+
+          <!-- Interactive Search Container inside Hero -->
+          <div class="w-full max-w-lg mx-auto lg:mx-0 p-2 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700/60 flex items-center gap-2">
+            <div class="pl-3 text-gray-400">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <input id="hero-search-input" type="text" placeholder="What skill do you want to learn today?" class="w-full bg-transparent border-0 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none">
+            <button id="hero-search-btn" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-all shadow-md">
+              Explore
+            </button>
+          </div>
+
+          <!-- Quick trust items -->
+          <div class="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+            <span class="flex items-center gap-2">
+              <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Certified Curriculums
+            </span>
+            <span class="flex items-center gap-2">
+              <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Mobile & Offline Friendly
+            </span>
+            <span class="flex items-center gap-2">
+              <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Support in Harar
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Column: Visual Frame -->
+        <div class="lg:col-span-5 relative mt-8 lg:mt-0">
+          <div class="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent rounded-3xl blur-2xl"></div>
+          <div class="relative mx-auto max-w-md lg:max-w-none rounded-3xl p-3 bg-gradient-to-tr from-green-400 via-yellow-300 to-red-400 shadow-2xl overflow-hidden transform lg:rotate-2 hover:rotate-0 transition-transform duration-300">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000" alt="Students collaborating at Amoo Academy" class="w-full h-[320px] sm:h-[400px] object-cover rounded-2xl shadow-inner">
+            <!-- Overlay Info Card -->
+            <div class="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-lg flex items-center gap-4">
+              <div class="h-12 w-12 rounded-lg bg-green-500 text-white flex items-center justify-center font-bold text-lg shadow-md flex-shrink-0">
+                12k
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-gray-900 dark:text-white leading-tight">Enrolled Students</h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Growing communities across Ethiopia</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Dashboard Section -->
+  <section id="statistics" class="py-12 bg-white dark:bg-slate-950 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center divide-y lg:divide-y-0 lg:divide-x divide-gray-100 dark:divide-slate-800/80">
+        <div class="pt-6 lg:pt-0">
+          <span class="text-3xl sm:text-4xl font-extrabold text-green-600 dark:text-green-400 block font-display">1,250+</span>
+          <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1 block">Active Students</span>
+        </div>
+        <div class="pt-6 lg:pt-0">
+          <span class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white block font-display">6</span>
+          <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1 block">Premium Courses</span>
+        </div>
+        <div class="pt-6 lg:pt-0">
+          <span class="text-3xl sm:text-4xl font-extrabold text-yellow-500 block font-display">4.9★</span>
+          <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1 block">Student Rating</span>
+        </div>
+        <div class="pt-6 lg:pt-0">
+          <span class="text-3xl sm:text-4xl font-extrabold text-green-600 dark:text-green-400 block font-display">200 ETB</span>
+          <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1 block">Flat Price Pledge</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Courses Section -->
+  <section id="featured-courses" class="py-16 md:py-24 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div>
+          <span class="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest block mb-1">Our Programs</span>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white font-display">Featured Skills for You</h2>
+          <p class="text-gray-600 dark:text-gray-400 text-sm max-w-xl mt-2">
+            Build professional competence with step-by-step practical modules tailored to Ethiopian markets.
+          </p>
+        </div>
+        <a href="./courses.html" class="inline-flex items-center gap-2 text-sm font-bold text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 group">
+          View All 6 Courses
+          <svg class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+        </a>
+      </div>
+
+      <!-- Course Cards Container -->
+      <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Injected dynamically via script or falls back to server seed -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Student Testimonials Section -->
+  <section id="testimonials" class="py-16 md:py-24 bg-white dark:bg-slate-950 transition-colors duration-300 overflow-hidden relative">
+    <div class="absolute left-0 bottom-0 h-44 w-44 rounded-full bg-green-500/5 blur-3xl"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest block mb-1">Reviews</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white font-display">What Our Graduates Say</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+          Real stories from motivated students who unlocked high-paying work and scaled corporate businesses.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Review 1 -->
+        <div class="p-6 md:p-8 rounded-2xl bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-1 text-yellow-500 mb-4">
+            <span class="text-lg">★★★★★</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
+            "Amoo Academy is a blessing for young people in Harar. I took the HTML & CSS and JavaScript courses. The explanation is super simple, and the projects helped me design a real corporate website. I am now working as a freelancer!"
+          </p>
+          <div class="flex items-center gap-4 mt-6">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-tr from-green-500 to-green-700 text-white font-bold flex items-center justify-center text-sm">
+              YT
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white leading-tight">Yohannes Tekle</h4>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Frontend Dev, Harar</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="p-6 md:p-8 rounded-2xl bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-1 text-yellow-500 mb-4">
+            <span class="text-lg">★★★★★</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
+            "I registered for the Social Media Marketing program because I needed to scale my family's spices retail business in Dire Dawa. 200 ETB was very affordable. Today, our Telegram channel has over 5,000 customers!"
+          </p>
+          <div class="flex items-center gap-4 mt-6">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-tr from-yellow-500 to-yellow-600 text-white font-bold flex items-center justify-center text-sm">
+              FA
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white leading-tight">Fatimah Ahmed</h4>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Business Owner, Dire Dawa</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="p-6 md:p-8 rounded-2xl bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-1 text-yellow-500 mb-4">
+            <span class="text-lg">★★★★★</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
+            "The Graphic Design course is amazing. Amanuel provides outstanding support. The modules are structured and easy to follow. I recommend everyone to join Amoo Academy and gain skills."
+          </p>
+          <div class="flex items-center gap-4 mt-6">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-tr from-red-500 to-red-600 text-white font-bold flex items-center justify-center text-sm">
+              KB
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white leading-tight">Kirubel Bekele</h4>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Brand Designer, Harar</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Accordion FAQ Section -->
+  <section id="faq" class="py-16 md:py-24 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-xl mx-auto mb-16">
+        <span class="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest block mb-1">Questions?</span>
+        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display">Frequently Asked Questions</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+          Everything you need to know about payments, access duration, certificates, and learning support.
+        </p>
+      </div>
+
+      <!-- Accordion Parent -->
+      <div class="flex flex-col gap-4">
+        
+        <!-- FAQ 1 -->
+        <div class="faq-item rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 overflow-hidden shadow-sm">
+          <button class="faq-toggle w-full px-6 py-5 flex items-center justify-between text-left font-bold text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors focus:outline-none">
+            <span>How much does a course cost, and are there any hidden fees?</span>
+            <svg class="h-5 w-5 transform transition-transform duration-200 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <div class="accordion-content">
+            <div class="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-50 dark:border-slate-700/30 pt-3">
+              Every single course at Amoo Academy costs exactly <strong>200 ETB</strong>. This is a one-time payment. There are absolutely no subscriptions, periodic charges, or hidden workbook expenses. You gain full lifetime access to all lectures.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 overflow-hidden shadow-sm">
+          <button class="faq-toggle w-full px-6 py-5 flex items-center justify-between text-left font-bold text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors focus:outline-none">
+            <span>Which payment methods are accepted in Ethiopia?</span>
+            <svg class="h-5 w-5 transform transition-transform duration-200 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <div class="accordion-content">
+            <div class="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-50 dark:border-slate-700/30 pt-3">
+              We support standard local payment processors including <strong>Commercial Bank of Ethiopia (CBE)</strong> Mobile Banking transfers, <strong>Telebirr</strong> payments, and <strong>Chapa</strong>. All transaction instructions are provided during the step-by-step enrollment checkout.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 overflow-hidden shadow-sm">
+          <button class="faq-toggle w-full px-6 py-5 flex items-center justify-between text-left font-bold text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors focus:outline-none">
+            <span>Do I receive a certificate upon completion?</span>
+            <svg class="h-5 w-5 transform transition-transform duration-200 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <div class="accordion-content">
+            <div class="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-50 dark:border-slate-700/30 pt-3">
+              Yes, absolutely! Once you complete all the lessons and submit your final course capstone project, our head instructor <strong>Amanuel</strong> verifies the submission. Upon approval, you receive a professional digital certificate that you can print or attach directly to your LinkedIn resume.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 overflow-hidden shadow-sm">
+          <button class="faq-toggle w-full px-6 py-5 flex items-center justify-between text-left font-bold text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors focus:outline-none">
+            <span>Where is the academy located, and how can I get support?</span>
+            <svg class="h-5 w-5 transform transition-transform duration-200 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <div class="accordion-content">
+            <div class="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-50 dark:border-slate-700/30 pt-3">
+              Amoo Academy is proudly based in the historical city of <strong>Harar, Ethiopia</strong>. If you run into technical questions or require enrollment guidelines, you can contact director Amanuel directly via phone call or SMS at <strong>0967145146</strong>, or email us at <strong>dhiirakoo@gmail.com</strong>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Contact & Newsletter Section -->
+  <section id="contact-and-news" class="py-16 md:py-24 bg-white dark:bg-slate-950 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        
+        <!-- Contact Form Card (7 Columns) -->
+        <div class="lg:col-span-7 p-6 sm:p-10 rounded-3xl bg-gray-50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800/80 shadow-sm flex flex-col gap-6">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Send Amanuel a Direct Message</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Have some unique questions? We reply to local inquiries within 2 hours.
+            </p>
+          </div>
+
+          <form id="contact-form" class="flex flex-col gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div class="flex flex-col gap-1.5">
+                <label for="contact-name" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Full Name</label>
+                <input type="text" id="contact-name" required placeholder="Abel Solomon" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="contact-phone" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Phone Number</label>
+                <input type="tel" id="contact-phone" required placeholder="0911223344" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="contact-email" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Email Address</label>
+              <input type="email" id="contact-email" required placeholder="abel@gmail.com" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="contact-message" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Your Message</label>
+              <textarea id="contact-message" rows="4" required placeholder="Hello Amanuel, I want to learn more about the HTML/CSS class curriculum..." class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 transition-all text-sm transform hover:-translate-y-0.5">
+              Send Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Newsletter Card (5 Columns) -->
+        <div class="lg:col-span-5 flex flex-col gap-8">
+          
+          <!-- Contact Direct Info -->
+          <div class="p-6 rounded-2xl bg-gradient-to-tr from-slate-900 to-slate-950 text-white border border-slate-800 shadow-md flex flex-col gap-4">
+            <h4 class="font-bold text-lg font-display">Amoo Office Harar</h4>
+            <div class="flex flex-col gap-3 text-sm text-gray-400">
+              <div class="flex items-center gap-3">
+                <span class="p-2 rounded-lg bg-slate-800 text-green-400">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                </span>
+                <span>Near Harar Gate, Harar, Ethiopia</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="p-2 rounded-lg bg-slate-800 text-green-400">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                </span>
+                <span>0967145146 (Amanuel)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Newsletter Signup -->
+          <div class="p-6 rounded-3xl bg-green-500/10 dark:bg-green-500/5 border border-green-500/20 shadow-sm flex flex-col gap-4">
+            <h4 class="font-bold text-lg font-display text-gray-900 dark:text-white">Get Weekly Tips & Discounts</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-normal">
+              Subscribe to the Amoo Academy bulletin. Get study schedules, local job boards, and discount updates directly in your inbox.
+            </p>
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3">
+              <input type="email" id="news-email" required placeholder="you@gmail.com" class="flex-grow px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+              <button type="submit" class="px-5 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition-colors shadow-md">
+                Subscribe
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Render Target -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="./script.js"></script>
+  <script>
+    // PAGE SPECIFIC LOGIC FOR INDEX.HTML
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Render Featured Courses
+      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+      const grid = document.getElementById('courses-grid');
+      
+      if (grid && courses.length > 0) {
+        // Show first 3 courses as featured
+        const featured = courses.slice(0, 3);
+        grid.innerHTML = featured.map(course => `
+          <div class="premium-glow-hover rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-full">
+            <div class="relative h-48 overflow-hidden">
+              <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" referrerpolicy="no-referrer">
+              <div class="absolute top-4 left-4 px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/95 backdrop-blur-md text-xs font-bold text-green-700 dark:text-green-400 border border-green-500/20">
+                ${course.category}
+              </div>
+              <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-green-600 text-white text-sm font-extrabold shadow-lg">
+                ${course.price} ETB
+              </div>
+            </div>
+            
+            <div class="p-6 flex flex-col flex-grow gap-3">
+              <div class="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 font-mono">
+                <span>${course.duration}</span>
+                <span class="text-yellow-500 flex items-center gap-1">★ ${course.rating}</span>
+              </div>
+              
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white leading-snug line-clamp-1 font-display">
+                ${course.title}
+              </h3>
+              
+              <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                ${course.description}
+              </p>
+              
+              <div class="mt-auto pt-4 border-t border-gray-50 dark:border-slate-700/50 grid grid-cols-2 gap-3">
+                <a href="./course-details.html?id=${course.id}" class="py-2 text-center text-xs font-bold text-green-600 hover:text-green-700 dark:text-green-400 hover:underline">
+                  Course Details
+                </a>
+                <a href="./enroll.html?course=${course.id}" class="py-2.5 px-3 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-bold rounded-lg shadow-sm transition-colors">
+                  Enroll Now
+                </a>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 2. Search inputs logic
+      const searchBtn = document.getElementById('hero-search-btn');
+      const searchInput = document.getElementById('hero-search-input');
+      const handleSearch = () => {
+        const query = searchInput.value.trim();
+        if (query) {
+          window.location.href = `./courses.html?search=${encodeURIComponent(query)}`;
+        } else {
+          showToast('Please enter a skill to search', 'error');
+        }
+      };
+      
+      if (searchBtn && searchInput) {
+        searchBtn.onclick = handleSearch;
+        searchInput.onkeypress = (e) => {
+          if (e.key === 'Enter') handleSearch();
+        };
+      }
+
+      // 3. FAQ Accordion Click handlers
+      const faqToggles = document.querySelectorAll('.faq-toggle');
+      faqToggles.forEach(toggle => {
+        toggle.onclick = () => {
+          const content = toggle.nextElementSibling;
+          const icon = toggle.querySelector('svg');
+          
+          const isOpened = content.classList.contains('active');
+          
+          // Close all FAQ items
+          document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+          document.querySelectorAll('.faq-toggle svg').forEach(i => i.classList.remove('rotate-180'));
+          
+          if (!isOpened) {
+            content.classList.add('active');
+            icon.classList.add('rotate-180');
+          }
+        };
+      });
+
+      // 4. Contact Form Simulation
+      const contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.onsubmit = (e) => {
+          e.preventDefault();
+          const name = document.getElementById('contact-name').value;
+          const phone = document.getElementById('contact-phone').value;
+          const email = document.getElementById('contact-email').value;
+          const message = document.getElementById('contact-message').value;
+
+          // Save simulation to local storage
+          const inquiries = JSON.parse(localStorage.getItem('amoo_inquiries') || '[]');
+          inquiries.push({ name, phone, email, message, date: new Date().toISOString() });
+          localStorage.setItem('amoo_inquiries', JSON.stringify(inquiries));
+
+          showToast(`Thank you, ${name}! Your inquiry has been sent to Amanuel.`, 'success');
+          contactForm.reset();
+        };
+      }
+
+      // 5. Newsletter Simulation
+      const newsForm = document.getElementById('newsletter-form');
+      if (newsForm) {
+        newsForm.onsubmit = (e) => {
+          e.preventDefault();
+          const email = document.getElementById('news-email').value;
+          
+          const subscribers = JSON.parse(localStorage.getItem('amoo_subscribers') || '[]');
+          subscribers.push({ email, date: new Date().toISOString() });
+          localStorage.setItem('amoo_subscribers', JSON.stringify(subscribers));
+
+          showToast('Subscribed! Check your email for weekly tutorials.', 'success');
+          newsForm.reset();
+        };
+      }
+    });
+  </script>
+</body>
+</html>

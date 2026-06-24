@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enroll Program - Amoo Academy</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Header Render Target -->
+  <header id="main-header"></header>
+
+  <!-- Main Enrollment Form Container -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left side Form & Inputs (7 Columns) -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        
+        <!-- Registration Form Card -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-xl flex flex-col gap-6">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-display">Student Registration Form</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Please enter your contact information for enrollment.
+            </p>
+          </div>
+
+          <form id="enrollment-form" class="flex flex-col gap-5">
+            
+            <!-- Full Name -->
+            <div class="flex flex-col gap-1.5">
+              <label for="enroll-name" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Full Name</label>
+              <input type="text" id="enroll-name" required placeholder="Abel Solomon" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+
+            <!-- Email Address -->
+            <div class="flex flex-col gap-1.5">
+              <label for="enroll-email" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Email Address</label>
+              <input type="email" id="enroll-email" required placeholder="abel@gmail.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+
+            <!-- Phone Number -->
+            <div class="flex flex-col gap-1.5">
+              <label for="enroll-phone" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Phone Number</label>
+              <input type="tel" id="enroll-phone" required placeholder="0911223344" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+
+            <!-- Step 2: Payment Provider select -->
+            <div class="flex flex-col gap-2.5 pt-4 border-t border-gray-100 dark:border-slate-700/50">
+              <label class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Choose Payment Method</label>
+              <div class="grid grid-cols-3 gap-3">
+                <!-- CBE Option -->
+                <label class="relative flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800/80 transition-all text-center">
+                  <input type="radio" name="payment_method" value="cbe" checked class="absolute top-3 right-3 text-green-600 focus:ring-green-500">
+                  <span class="text-xs font-extrabold text-gray-800 dark:text-gray-200 mt-2">CBE</span>
+                  <span class="text-[9px] text-gray-400">Mobile Bank</span>
+                </label>
+                <!-- Telebirr Option -->
+                <label class="relative flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800/80 transition-all text-center">
+                  <input type="radio" name="payment_method" value="telebirr" class="absolute top-3 right-3 text-green-600 focus:ring-green-500">
+                  <span class="text-xs font-extrabold text-gray-800 dark:text-gray-200 mt-2">Telebirr</span>
+                  <span class="text-[9px] text-gray-400">0967145146</span>
+                </label>
+                <!-- Chapa Option -->
+                <label class="relative flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800/80 transition-all text-center">
+                  <input type="radio" name="payment_method" value="chapa" class="absolute top-3 right-3 text-green-600 focus:ring-green-500">
+                  <span class="text-xs font-extrabold text-gray-800 dark:text-gray-200 mt-2">Chapa</span>
+                  <span class="text-[9px] text-gray-400">Simulated</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Dynamic Payment Instructions Panel -->
+            <div id="payment-instructions" class="p-4 rounded-xl bg-green-50 dark:bg-green-950/20 border border-green-500/20 text-xs text-gray-600 dark:text-gray-300 leading-relaxed flex flex-col gap-2">
+              <!-- Inserted dynamically on select -->
+            </div>
+
+            <!-- Transaction reference ID -->
+            <div class="flex flex-col gap-1.5">
+              <label for="enroll-ref" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Transaction Reference ID (Required Proof)</label>
+              <input type="text" id="enroll-ref" required placeholder="e.g. CBE-FT-90812 or Telebirr TXN Code" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+              <p class="text-[10px] text-gray-400">Paste your transfer reference confirmation code here. Amanuel checks this ID to confirm your 200 ETB payment.</p>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 transition-all text-sm transform hover:-translate-y-0.5">
+              Submit Enrollment
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Right side Order Summary Sidebar (5 Columns) -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        
+        <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-xl flex flex-col gap-5">
+          <h3 class="font-bold text-lg text-gray-900 dark:text-white font-display border-b border-gray-50 dark:border-slate-700 pb-3">Course Order Summary</h3>
+          
+          <div class="flex items-start gap-4">
+            <img id="summary-image" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=800" class="h-16 w-16 object-cover rounded-xl border border-gray-100 dark:border-slate-700">
+            <div class="flex-grow">
+              <h4 id="summary-title" class="text-sm font-bold text-gray-800 dark:text-gray-200 line-clamp-2">HTML & CSS responsive design</h4>
+              <span id="summary-category" class="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase font-mono mt-0.5 block">Programming</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 pt-4 border-t border-gray-100 dark:border-slate-700/50 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-500 dark:text-gray-400">Course Price</span>
+              <strong class="text-gray-800 dark:text-gray-200">200 ETB</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-500 dark:text-gray-400">Registration fee</span>
+              <strong class="text-green-600 dark:text-green-400">FREE</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-500 dark:text-gray-400">Certificate Cost</span>
+              <strong class="text-green-600 dark:text-green-400">FREE</strong>
+            </div>
+            <div class="flex items-center justify-between border-t border-dashed border-gray-200 dark:border-slate-700 pt-3 text-base">
+              <span class="text-gray-900 dark:text-white font-bold">Total Cost</span>
+              <strong class="text-xl font-extrabold text-green-600 dark:text-green-400">200 ETB</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help Info -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 flex flex-col gap-3">
+          <h4 class="font-bold text-sm text-gray-800 dark:text-gray-200">Need Enrollment Support?</h4>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+            If you encounter problems making transfers or completing this form, please contact director Amanuel directly.
+          </p>
+          <div class="flex flex-col gap-1 text-xs font-bold text-green-600 dark:text-green-400">
+            <a href="tel:0967145146" class="hover:underline">Phone: 0967145146</a>
+            <a href="mailto:dhiirakoo@gmail.com" class="hover:underline">Email: dhiirakoo@gmail.com</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Success Modal Popup Overlay -->
+  <div id="success-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60 shadow-2xl flex flex-col items-center text-center gap-6 animate-fade-in">
+      <!-- Checked Icon with ripple -->
+      <div class="relative flex items-center justify-center">
+        <div class="absolute h-16 w-16 bg-green-500/10 rounded-full animate-ping"></div>
+        <div class="h-16 w-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/20">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white font-display">Enrollment Submitted!</h3>
+        <p class="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest font-mono">Reference Code: <span id="success-ref">CBE-8120</span></p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mt-1">
+          Your enrollment request has been registered under <strong>Pending Approval</strong>. Director Amanuel will verify your reference proof and activate your class access within 2 hours.
+        </p>
+      </div>
+
+      <div class="w-full flex flex-col sm:flex-row gap-3 pt-2">
+        <a href="./courses.html" class="flex-1 py-3 text-center text-xs font-bold border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-all">
+          Browse Catalog
+        </a>
+        <a id="success-dashboard-link" href="./index.html" class="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-bold rounded-xl shadow-md transition-all">
+          Home Portal
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Render Target -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="./script.js"></script>
+  <script>
+    // PAGE SPECIFIC LOGIC FOR ENROLL.HTML
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Resolve course selection
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('course') || 'html-css';
+
+      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+      const course = courses.find(c => c.id === courseId) || courses[0];
+
+      if (course) {
+        document.getElementById('summary-image').src = course.image;
+        document.getElementById('summary-image').alt = course.title;
+        document.getElementById('summary-title').textContent = course.title;
+        document.getElementById('summary-category').textContent = course.category;
+      }
+
+      // 2. Pre-fill student info if logged in
+      const user = getLoggedUser();
+      if (user) {
+        document.getElementById('enroll-name').value = user.name;
+        document.getElementById('enroll-email').value = user.email;
+        document.getElementById('enroll-phone').value = user.phone;
+        
+        // Custom Dashboard redirect in modal
+        if (user.role === 'admin') {
+          document.getElementById('success-dashboard-link').href = './admin.html';
+          document.getElementById('success-dashboard-link').textContent = 'Admin Dashboard';
+        }
+      }
+
+      // 3. Setup dynamic payment instruction tabs
+      const instructionsPanel = document.getElementById('payment-instructions');
+      const pmRadios = document.getElementsByName('payment_method');
+
+      const instructionsMap = {
+        cbe: `
+          <div class="flex flex-col gap-1.5">
+            <strong class="text-green-800 dark:text-green-300 font-bold block">CBE Mobile Banking Instructions:</strong>
+            <p>1. Open your CBE Birr or CBE Mobile App.</p>
+            <p>2. Choose <strong>Transfer</strong> -> <strong>CBE Bank Account</strong>.</p>
+            <p>3. Enter Account: <strong class="text-gray-900 dark:text-white font-mono font-bold">1000184719273</strong> (Amanuel Dhiirakoo).</p>
+            <p>4. Send exactly <strong class="text-gray-900 dark:text-white">200 ETB</strong>.</p>
+            <p>5. Copy the transaction reference ID from your CBE SMS receipt and paste it below.</p>
+          </div>
+        `,
+        telebirr: `
+          <div class="flex flex-col gap-1.5">
+            <strong class="text-green-800 dark:text-green-300 font-bold block">Telebirr Transfer Instructions:</strong>
+            <p>1. Dial <strong>*127#</strong> or open the Telebirr App.</p>
+            <p>2. Select <strong>Send Money</strong>.</p>
+            <p>3. Enter Phone Number: <strong class="text-gray-900 dark:text-white font-mono font-bold">0967145146</strong> (Amanuel).</p>
+            <p>4. Input exactly <strong class="text-gray-900 dark:text-white">200 ETB</strong>.</p>
+            <p>5. Copy the transaction reference ID from your Telebirr SMS receipt and paste it below.</p>
+          </div>
+        `,
+        chapa: `
+          <div class="flex flex-col gap-1.5">
+            <strong class="text-green-800 dark:text-green-300 font-bold block">Chapa Express Simulation:</strong>
+            <p>Chapa is an automated payment gateway in Ethiopia. Because this is a static showcase environment, we have integrated a sandbox simulation.</p>
+            <p>Simply enter any mock reference code (e.g., <strong>CH-Ref-12345</strong>) below. The admin dashboard allows immediate manual payment approvals!</p>
+          </div>
+        `
+      };
+
+      const updateInstructions = () => {
+        let selected = 'cbe';
+        for (const radio of pmRadios) {
+          if (radio.checked) {
+            selected = radio.value;
+            break;
+          }
+        }
+        instructionsPanel.innerHTML = instructionsMap[selected];
+      };
+
+      for (const radio of pmRadios) {
+        radio.onchange = updateInstructions;
+      }
+      updateInstructions(); // initial run
+
+      // 4. Form submission handler
+      const form = document.getElementById('enrollment-form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('enroll-name').value;
+        const email = document.getElementById('enroll-email').value;
+        const phone = document.getElementById('enroll-phone').value;
+        const refId = document.getElementById('enroll-ref').value.trim();
+
+        let selectedPm = 'cbe';
+        for (const radio of pmRadios) {
+          if (radio.checked) {
+            selectedPm = radio.value;
+            break;
+          }
+        }
+
+        // Generate enrollment record
+        const enrollments = JSON.parse(localStorage.getItem('amoo_enrollments') || '[]');
+        const enrId = 'ENR-' + Math.floor(1000 + Math.random() * 9000);
+
+        const newEnrollment = {
+          id: enrId,
+          studentName: name,
+          studentEmail: email,
+          studentPhone: phone,
+          courseId: course.id,
+          courseName: course.title,
+          price: 200,
+          paymentMethod: selectedPm,
+          paymentDetails: refId,
+          status: 'pending',
+          date: new Date().toISOString().split('T')[0]
+        };
+
+        enrollments.push(newEnrollment);
+        localStorage.setItem('amoo_enrollments', JSON.stringify(enrollments));
+
+        // Display Success popup
+        document.getElementById('success-ref').textContent = refId;
+        document.getElementById('success-overlay').classList.remove('hidden');
+        showToast('Enrollment request submitted successfully!', 'success');
+      };
+
+    });
+  </script>
+</body>
+</html>

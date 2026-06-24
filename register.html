@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Free - Amoo Academy</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+  <!-- Header Render Target -->
+  <header id="main-header"></header>
+
+  <!-- Register Form Main Canvas -->
+  <main class="flex-grow flex items-center justify-center py-16 px-4 relative overflow-hidden">
+    <!-- Ambient background decorations -->
+    <div class="absolute top-1/4 right-1/4 -z-10 h-64 w-64 rounded-full bg-green-500/10 blur-3xl"></div>
+    <div class="absolute bottom-1/4 left-1/4 -z-10 h-64 w-64 rounded-full bg-green-500/5 blur-3xl"></div>
+
+    <div class="w-full max-w-lg p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-2xl flex flex-col gap-8 animate-fade-in">
+      
+      <!-- Brand Headers -->
+      <div class="text-center flex flex-col items-center gap-2">
+        <div class="h-12 w-12 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20 mb-2">
+          <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white font-display">Create Your Account</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Gain immediate access to premium courses for 200 ETB.
+        </p>
+      </div>
+
+      <!-- Registration Form element -->
+      <form id="register-form" class="flex flex-col gap-5">
+        
+        <!-- Full Name Field -->
+        <div class="flex flex-col gap-1.5">
+          <label for="reg-name" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Full Name</label>
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <input type="text" id="reg-name" required placeholder="Abel Solomon" class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+          </div>
+        </div>
+
+        <!-- Username & Phone (Grid Layout) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Username -->
+          <div class="flex flex-col gap-1.5">
+            <label for="reg-username" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Username</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-4 text-gray-400 text-xs font-bold font-mono">@</span>
+              <input type="text" id="reg-username" required placeholder="abelsol" class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+          </div>
+          <!-- Phone -->
+          <div class="flex flex-col gap-1.5">
+            <label for="reg-phone" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Phone Number</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-4 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </span>
+              <input type="tel" id="reg-phone" required placeholder="0911223344" class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="flex flex-col gap-1.5">
+          <label for="reg-email" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Email Address</label>
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+            <input type="email" id="reg-email" required placeholder="abel@gmail.com" class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="flex flex-col gap-1.5">
+          <label for="reg-password" class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Password</label>
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="reg-password" required placeholder="••••••••••••" class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700/50 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white">
+          </div>
+        </div>
+
+        <!-- Terms Aggreement -->
+        <div class="flex items-start gap-3">
+          <input type="checkbox" id="reg-terms" required class="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500">
+          <label for="reg-terms" class="text-xs text-gray-500 dark:text-gray-400 leading-normal">
+            I agree to the Amoo Academy terms. I understand courses are 200 ETB and payments are processed manually.
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/10 hover:shadow-green-500/20 hover:-translate-y-0.5 transition-all text-sm block">
+          Register Free
+        </button>
+
+      </form>
+
+      <!-- Bottom Navigation Helpers -->
+      <div class="text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-slate-700/50 pt-4">
+        <p>
+          Already have an account? 
+          <a href="./login.html" class="text-green-600 dark:text-green-400 font-bold hover:underline">Sign in instead</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer Render Target -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="./script.js"></script>
+  <script>
+    // PAGE SPECIFIC LOGIC FOR REGISTER.HTML
+    window.addEventListener('DOMContentLoaded', () => {
+      // Redirect if already logged in
+      if (getLoggedUser()) {
+        window.location.href = './index.html';
+        return;
+      }
+
+      const form = document.getElementById('register-form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('reg-name').value.trim();
+        const username = document.getElementById('reg-username').value.trim().toLowerCase();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const email = document.getElementById('reg-email').value.trim().toLowerCase();
+        const password = document.getElementById('reg-password').value;
+
+        // Validation checks
+        const users = JSON.parse(localStorage.getItem('amoo_users') || '[]');
+        
+        // Check if email already registered
+        if (users.some(u => u.email === email)) {
+          showToast('An account with this email already exists!', 'error');
+          return;
+        }
+
+        // Check if username already exists
+        if (users.some(u => u.username === username)) {
+          showToast('This username is already taken!', 'error');
+          return;
+        }
+
+        // Create new user object
+        const newUser = {
+          name,
+          username,
+          phone,
+          email,
+          password,
+          role: 'student' // standard student
+        };
+
+        // Save to LocalStorage database
+        users.push(newUser);
+        localStorage.setItem('amoo_users', JSON.stringify(users));
+
+        // Automatically log user in
+        localStorage.setItem('amoo_logged_user', JSON.stringify(newUser));
+        showToast(`Registration successful! Welcome to the Academy, ${name}.`, 'success');
+
+        setTimeout(() => {
+          window.location.href = './courses.html';
+        }, 1200);
+      };
+    });
+  </script>
+</body>
+</html>

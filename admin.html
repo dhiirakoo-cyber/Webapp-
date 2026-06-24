@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Amoo Academy</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Header Render Target -->
+  <header id="main-header"></header>
+
+  <!-- Security Guard Blocking Content -->
+  <div id="denied-view" class="hidden flex-col items-center justify-center py-28 px-4 text-center min-h-screen">
+    <div class="h-16 w-16 rounded-full bg-red-100 text-red-500 dark:bg-slate-800 dark:text-red-400 flex items-center justify-center mb-4">
+      <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+    </div>
+    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white font-display">Access Denied</h3>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+      This page is reserved strictly for administrator <strong>Amanuel</strong>. Please sign in with admin credentials to continue.
+    </p>
+    <a href="./login.html" class="mt-6 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-colors shadow-md">
+      Admin Sign In
+    </a>
+  </div>
+
+  <!-- Real Admin Dashboard Layout -->
+  <main id="admin-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-10">
+    
+    <!-- Admin Hero Welcome -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display">Amanuel's Control Panel</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Manage courses, approve student transactions, and track revenue statistics.
+        </p>
+      </div>
+      <button id="add-course-trigger" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow hover:-translate-y-0.5 transition-all focus:outline-none">
+        Add New Course
+      </button>
+    </div>
+
+    <!-- Metric Board Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Revenue (calculated approved * 200 ETB) -->
+      <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
+        <div class="flex items-baseline gap-1 mt-1">
+          <span id="metric-revenue" class="text-2xl sm:text-3xl font-extrabold text-green-600 dark:text-green-400 font-display">0</span>
+          <span class="text-xs font-bold text-yellow-500">ETB</span>
+        </div>
+        <span class="text-[10px] text-gray-400 mt-1">Approved payments only</span>
+      </div>
+
+      <!-- Total Students -->
+      <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Enrolled Students</span>
+        <span id="metric-students" class="text-2xl sm:text-3xl font-extrabold text-gray-950 dark:text-white mt-1 font-display">0</span>
+        <span class="text-[10px] text-gray-400 mt-1">Complete request rows</span>
+      </div>
+
+      <!-- Pending Reviews -->
+      <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pending Checks</span>
+        <span id="metric-pending" class="text-2xl sm:text-3xl font-extrabold text-yellow-500 mt-1 font-display">0</span>
+        <span class="text-[10px] text-yellow-600 dark:text-yellow-500 mt-1">Awaiting verification</span>
+      </div>
+
+      <!-- Courses count -->
+      <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Courses</span>
+        <span id="metric-courses" class="text-2xl sm:text-3xl font-extrabold text-gray-950 dark:text-white mt-1 font-display">0</span>
+        <span class="text-[10px] text-gray-400 mt-1">In-house categories</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Revenue bar chart -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-6">
+      <h3 class="text-base font-bold text-gray-900 dark:text-white uppercase tracking-wider font-display">Approved Revenue by Course Catalog</h3>
+      <div id="revenue-chart" class="flex flex-col gap-4">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Student Enrollments Board -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-6">
+      <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-700/60 pb-3">
+        <h3 class="font-bold text-lg text-gray-900 dark:text-white font-display">Student Enrollment Inquiries</h3>
+        <span class="px-2.5 py-1 rounded-full bg-green-500/10 text-xs font-bold text-green-600 dark:text-green-400 font-mono">Manual Verification</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-slate-700/60 text-gray-400 font-bold uppercase tracking-wider text-xs">
+              <th class="py-3 px-4">Student Info</th>
+              <th class="py-3 px-4">Course Enrolled</th>
+              <th class="py-3 px-4">Payment / Reference</th>
+              <th class="py-3 px-4">Date</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="enrollments-tbody">
+            <!-- Injected dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Course Management Board -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-6">
+      <h3 class="font-bold text-lg text-gray-900 dark:text-white font-display border-b border-gray-100 dark:border-slate-700/60 pb-3">In-House Course Management</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="admin-courses-grid">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add/Edit Course Modal Overlay -->
+  <div id="course-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60 shadow-2xl flex flex-col gap-6 animate-fade-in max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 id="modal-title" class="text-xl font-bold text-gray-900 dark:text-white font-display">Add New Skill Course</h3>
+        <button id="modal-close" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-gray-600 dark:hover:text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form id="course-form" class="flex flex-col gap-4">
+        <input type="hidden" id="edit-course-idx">
+
+        <!-- Title -->
+        <div class="flex flex-col gap-1">
+          <label for="course-modal-title" class="text-xs font-bold text-gray-500 uppercase">Course Title</label>
+          <input type="text" id="course-modal-title" required placeholder="Python Core Basics" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+        </div>
+
+        <!-- ID & Category (Grid) -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label for="course-modal-id" class="text-xs font-bold text-gray-500 uppercase">Course Slug/ID</label>
+            <input type="text" id="course-modal-id" required placeholder="python-basics" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="course-modal-cat" class="text-xs font-bold text-gray-500 uppercase">Category</label>
+            <select id="course-modal-cat" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+              <option value="Programming">Programming</option>
+              <option value="Creative">Creative</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Professional">Professional</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Duration & Difficulty (Grid) -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label for="course-modal-duration" class="text-xs font-bold text-gray-500 uppercase">Duration</label>
+            <input type="text" id="course-modal-duration" required placeholder="4 weeks" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="course-modal-level" class="text-xs font-bold text-gray-500 uppercase">Difficulty</label>
+            <select id="course-modal-level" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Image URL -->
+        <div class="flex flex-col gap-1">
+          <label for="course-modal-image" class="text-xs font-bold text-gray-500 uppercase">Image URL (Unsplash Link)</label>
+          <input type="text" id="course-modal-image" required placeholder="https://images.unsplash.com/photo-..." class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white">
+        </div>
+
+        <!-- Description -->
+        <div class="flex flex-col gap-1">
+          <label for="course-modal-desc" class="text-xs font-bold text-gray-500 uppercase">Description</label>
+          <textarea id="course-modal-desc" rows="3" required placeholder="Describe course details..." class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:border-green-500 dark:text-white"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition-all shadow-md mt-2">
+          Save Program Parameters
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer Render Target -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="./script.js"></script>
+  <script>
+    // PAGE SPECIFIC LOGIC FOR ADMIN.HTML
+    window.addEventListener('DOMContentLoaded', () => {
+      const isUserAdmin = isAdmin();
+
+      const deniedFrame = document.getElementById('denied-view');
+      const adminFrame = document.getElementById('admin-view');
+
+      if (!isUserAdmin) {
+        deniedFrame.classList.remove('hidden');
+        deniedFrame.classList.add('flex');
+        adminFrame.classList.add('hidden');
+        return;
+      }
+
+      deniedFrame.classList.add('hidden');
+      adminFrame.classList.remove('hidden');
+
+      // ------------------------------------------------
+      // METRIC CALCULATIONS & TABLE LOADER
+      // ------------------------------------------------
+      function renderDashboard() {
+        const enrollments = JSON.parse(localStorage.getItem('amoo_enrollments') || '[]');
+        const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+
+        // Calculators
+        const approved = enrollments.filter(e => e.status === 'approved');
+        const pending = enrollments.filter(e => e.status === 'pending');
+        const totalRevenue = approved.reduce((sum, current) => sum + current.price, 0);
+
+        // Metric bindings
+        document.getElementById('metric-revenue').textContent = totalRevenue.toLocaleString();
+        document.getElementById('metric-students').textContent = enrollments.length;
+        document.getElementById('metric-pending').textContent = pending.length;
+        document.getElementById('metric-courses').textContent = courses.length;
+
+        // Render approved revenue bar chart
+        const chartWrapper = document.getElementById('revenue-chart');
+        
+        // Group by category revenue
+        const categories = ['Programming', 'Creative', 'Marketing', 'Professional'];
+        const catRevenueMap = {};
+        categories.forEach(c => catRevenueMap[c] = 0);
+
+        approved.forEach(e => {
+          const course = courses.find(c => c.id === e.courseId);
+          const cat = course ? course.category : 'Programming';
+          if (catRevenueMap[cat] !== undefined) {
+            catRevenueMap[cat] += e.price;
+          } else {
+            catRevenueMap['Programming'] += e.price;
+          }
+        });
+
+        const maxVal = Math.max(...Object.values(catRevenueMap), 200); // minimum scale
+
+        chartWrapper.innerHTML = categories.map(cat => {
+          const rev = catRevenueMap[cat];
+          const percent = (rev / maxVal) * 100;
+          return `
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+              <span class="w-32 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">${cat}</span>
+              <div class="flex-grow h-6 bg-gray-100 dark:bg-slate-700/50 rounded-lg overflow-hidden relative border border-gray-200/50 dark:border-slate-700/30">
+                <div class="h-full bg-green-500 transition-all duration-500" style="width: ${percent}%"></div>
+                <span class="absolute left-3 top-0.5 text-xs font-extrabold text-slate-800 dark:text-white">${rev} ETB</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Enrollments Table
+        const tbody = document.getElementById('enrollments-tbody');
+        if (enrollments.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center py-10 text-gray-400">No student enrollment rows found.</td>
+            </tr>
+          `;
+        } else {
+          // Sort list to show pending first, then chronologically
+          const sorted = [...enrollments].sort((a, b) => {
+            if (a.status === 'pending' && b.status !== 'pending') return -1;
+            if (a.status !== 'pending' && b.status === 'pending') return 1;
+            return b.date.localeCompare(a.date);
+          });
+
+          tbody.innerHTML = sorted.map(enr => {
+            let statusBadge = '';
+            if (enr.status === 'approved') {
+              statusBadge = '<span class="px-2 py-1 rounded-md bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 text-xs font-bold uppercase">Approved</span>';
+            } else if (enr.status === 'pending') {
+              statusBadge = '<span class="px-2 py-1 rounded-md bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400 text-xs font-bold uppercase animate-pulse">Pending</span>';
+            } else {
+              statusBadge = '<span class="px-2 py-1 rounded-md bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 text-xs font-bold uppercase">Rejected</span>';
+            }
+
+            return `
+              <tr class="border-b border-gray-50 dark:border-slate-800/60 hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-all text-xs">
+                <td class="py-4 px-4 flex flex-col gap-0.5">
+                  <strong class="text-sm font-bold text-gray-900 dark:text-white">${enr.studentName}</strong>
+                  <span class="text-gray-400 font-mono">${enr.studentEmail}</span>
+                  <span class="text-gray-400">${enr.studentPhone}</span>
+                </td>
+                <td class="py-4 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                  ${enr.courseName}
+                </td>
+                <td class="py-4 px-4 flex flex-col gap-0.5">
+                  <span class="font-bold text-green-600 dark:text-green-400">${enr.price} ETB</span>
+                  <span class="uppercase tracking-widest font-mono text-[10px] text-gray-500 font-extrabold">${enr.paymentMethod}</span>
+                  <span class="text-[10px] font-mono text-gray-400 break-all bg-gray-50 dark:bg-slate-900 p-1 rounded border border-gray-100 dark:border-slate-800 max-w-[150px]">${enr.paymentDetails}</span>
+                </td>
+                <td class="py-4 px-4 font-mono text-gray-500 dark:text-gray-400">${enr.date}</td>
+                <td class="py-4 px-4">${statusBadge}</td>
+                <td class="py-4 px-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    ${enr.status === 'pending' ? `
+                      <button data-id="${enr.id}" class="btn-approve px-2.5 py-1 bg-green-600 text-white hover:bg-green-700 rounded-md font-bold transition-all shadow-sm">
+                        Approve
+                      </button>
+                      <button data-id="${enr.id}" class="btn-reject px-2.5 py-1 bg-yellow-500 text-white hover:bg-yellow-600 rounded-md font-bold transition-all shadow-sm">
+                        Reject
+                      </button>
+                    ` : ''}
+                    <button data-id="${enr.id}" class="btn-delete p-1.5 hover:bg-red-50 text-red-500 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Bind Action events
+          document.querySelectorAll('.btn-approve').forEach(btn => {
+            btn.onclick = () => {
+              const id = btn.getAttribute('data-id');
+              updateEnrollmentStatus(id, 'approved');
+            };
+          });
+
+          document.querySelectorAll('.btn-reject').forEach(btn => {
+            btn.onclick = () => {
+              const id = btn.getAttribute('data-id');
+              updateEnrollmentStatus(id, 'rejected');
+            };
+          });
+
+          document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.onclick = () => {
+              const id = btn.getAttribute('data-id');
+              deleteEnrollment(id);
+            };
+          });
+        }
+
+        // Render Courses List
+        renderCoursesBoard();
+      }
+
+      // Action Handlers
+      function updateEnrollmentStatus(id, newStatus) {
+        const enrollments = JSON.parse(localStorage.getItem('amoo_enrollments') || '[]');
+        const idx = enrollments.findIndex(e => e.id === id);
+        if (idx !== -1) {
+          enrollments[idx].status = newStatus;
+          localStorage.setItem('amoo_enrollments', JSON.stringify(enrollments));
+          showToast(`Enrollment ${id} ${newStatus}!`, 'success');
+          renderDashboard();
+        }
+      }
+
+      function deleteEnrollment(id) {
+        if (!confirm('Are you sure you want to delete this enrollment?')) return;
+        const enrollments = JSON.parse(localStorage.getItem('amoo_enrollments') || '[]');
+        const filtered = enrollments.filter(e => e.id !== id);
+        localStorage.setItem('amoo_enrollments', JSON.stringify(filtered));
+        showToast(`Enrollment deleted!`, 'success');
+        renderDashboard();
+      }
+
+      // ------------------------------------------------
+      // COURSE MANAGEMENT RENDERING
+      // ------------------------------------------------
+      function renderCoursesBoard() {
+        const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+        const board = document.getElementById('admin-courses-grid');
+
+        board.innerHTML = courses.map((course, idx) => `
+          <div class="rounded-2xl bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-5 flex flex-col justify-between gap-4 animate-fade-in">
+            <div class="flex items-start gap-3">
+              <img src="${course.image}" class="h-14 w-14 object-cover rounded-xl border" referrerpolicy="no-referrer">
+              <div>
+                <h4 class="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">${course.title}</h4>
+                <span class="px-2 py-0.5 rounded bg-green-500/10 text-[10px] font-bold text-green-600 dark:text-green-400 uppercase font-mono mt-0.5 inline-block">${course.category}</span>
+              </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+              ${course.description}
+            </p>
+
+            <div class="pt-3 border-t border-gray-200/50 dark:border-slate-800/80 flex items-center justify-between text-xs text-gray-400 font-bold">
+              <span>${course.duration}</span>
+              <span class="text-green-600 dark:text-green-400">${course.price} ETB</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="editCourseTrigger(${idx})" class="py-2 bg-white hover:bg-gray-100 border border-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 text-gray-700 dark:text-gray-200 font-bold rounded-lg text-center text-xs focus:outline-none transition-colors">
+                Edit parameters
+              </button>
+              <button onclick="deleteCourseTrigger('${course.id}')" class="py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-center text-xs focus:outline-none transition-colors">
+                Delete Course
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Course modal helpers
+      const modal = document.getElementById('course-modal');
+      const closeBtn = document.getElementById('modal-close');
+      const triggerBtn = document.getElementById('add-course-trigger');
+      const courseForm = document.getElementById('course-form');
+
+      triggerBtn.onclick = () => {
+        document.getElementById('modal-title').textContent = 'Add New Skill Course';
+        courseForm.reset();
+        document.getElementById('edit-course-idx').value = '';
+        document.getElementById('course-modal-id').disabled = false;
+        modal.classList.remove('hidden');
+      };
+
+      closeBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+
+      // Handle Course Add/Edit submit
+      courseForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('course-modal-title').value;
+        const id = document.getElementById('course-modal-id').value.trim().toLowerCase();
+        const category = document.getElementById('course-modal-cat').value;
+        const duration = document.getElementById('course-modal-duration').value;
+        const level = document.getElementById('course-modal-level').value;
+        const image = document.getElementById('course-modal-image').value;
+        const description = document.getElementById('course-modal-desc').value;
+
+        const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+        const editIdxStr = document.getElementById('edit-course-idx').value;
+
+        if (editIdxStr !== '') {
+          // Edit operation
+          const editIdx = parseInt(editIdxStr);
+          courses[editIdx] = {
+            ...courses[editIdx],
+            title,
+            category,
+            duration,
+            level,
+            image,
+            description
+          };
+          localStorage.setItem('amoo_courses', JSON.stringify(courses));
+          showToast('Course updated successfully!', 'success');
+        } else {
+          // Add operation
+          // Check if ID is unique
+          if (courses.some(c => c.id === id)) {
+            showToast('Course ID must be unique!', 'error');
+            return;
+          }
+
+          const newCourse = {
+            id,
+            title,
+            category,
+            rating: 4.8,
+            price: 200,
+            reviews: 1,
+            duration,
+            level,
+            image,
+            description,
+            curriculum: ['Introduction and Workspace setup', 'Core Theoretical Principles', 'Case study, mock examples and exercises', 'Final Capstone Project & Certificate Assessment'],
+            benefits: ['Acquire highly sought-after industry skills', 'Design and complete a professional portfolio project', 'Direct mentoring support from our experts', 'Verify competence with an certified digital badge']
+          };
+
+          courses.push(newCourse);
+          localStorage.setItem('amoo_courses', JSON.stringify(courses));
+          showToast('New course added!', 'success');
+        }
+
+        modal.classList.add('hidden');
+        renderDashboard();
+      };
+
+      // Wires global handles so onclick is accessible
+      window.editCourseTrigger = (idx) => {
+        const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+        const course = courses[idx];
+
+        document.getElementById('modal-title').textContent = 'Edit Course Parameters';
+        document.getElementById('course-modal-title').value = course.title;
+        document.getElementById('course-modal-id').value = course.id;
+        document.getElementById('course-modal-id').disabled = true; // cannot change slug ID
+        document.getElementById('course-modal-cat').value = course.category;
+        document.getElementById('course-modal-duration').value = course.duration;
+        document.getElementById('course-modal-level').value = course.level;
+        document.getElementById('course-modal-image').value = course.image;
+        document.getElementById('course-modal-desc').value = course.description;
+        
+        document.getElementById('edit-course-idx').value = idx;
+
+        modal.classList.remove('hidden');
+      };
+
+      window.deleteCourseTrigger = (id) => {
+        if (!confirm('Are you sure you want to delete this course from the catalogue?')) return;
+        const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+        const filtered = courses.filter(c => c.id !== id);
+        localStorage.setItem('amoo_courses', JSON.stringify(filtered));
+        showToast('Course deleted from catalogue!', 'success');
+        renderDashboard();
+      };
+
+      // Initial execution
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>

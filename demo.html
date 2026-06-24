@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Playroom - Amoo Academy</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom configuration for Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Header Render Target -->
+  <header id="main-header"></header>
+
+  <!-- Page Header -->
+  <section class="relative bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-800/80 py-12 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white font-display">Interactive Learning Demo</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Experience our hands-on study method. Code live inside the browser, completely free!
+        </p>
+      </div>
+      <!-- Breadcrumb -->
+      <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 self-center">
+        <a href="./index.html" class="hover:text-green-500 transition-colors">Home</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-600 dark:text-gray-300">Interactive Demo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Layout Panels -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-12">
+    
+    <!-- Tab Controls to switch between Sandbox and Quiz -->
+    <div class="flex items-center justify-center border-b border-gray-200 dark:border-slate-800">
+      <button id="toggle-sandbox" class="px-6 py-4.5 text-sm font-bold border-b-2 border-green-500 text-green-600 dark:text-green-400 focus:outline-none transition-all">
+        HTML/CSS Live Sandbox
+      </button>
+      <button id="toggle-quiz" class="px-6 py-4.5 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-white focus:outline-none transition-all">
+        JavaScript Core Quiz
+      </button>
+    </div>
+
+    <!-- 1. HTML & CSS SANDBOX PLAYGROUND PANEL -->
+    <section id="sandbox-panel" class="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
+      
+      <!-- Instructions & Input (5 Columns) -->
+      <div class="lg:col-span-5 flex flex-col gap-5">
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 shadow-sm flex flex-col gap-3">
+          <h3 class="font-bold text-base text-gray-900 dark:text-white">Your First Lesson: Custom Headings</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+            In our <strong>HTML & CSS course</strong>, you learn how to style markup elements. 
+            Try customizing the code in the text editor below!
+          </p>
+          <ul class="text-[11px] text-gray-600 dark:text-gray-400 flex flex-col gap-1 list-disc pl-4 font-semibold">
+            <li>Change "Amoo Academy" to your own name.</li>
+            <li>Modify the CSS <code class="font-mono text-green-500">background-color</code> from green to blue.</li>
+            <li>Press the <strong class="text-green-500">Run Output</strong> button to update the iframe view.</li>
+          </ul>
+        </div>
+
+        <!-- Code Editor Box -->
+        <div class="p-5 rounded-2xl bg-slate-950 text-gray-100 border border-slate-900 flex flex-col gap-4 shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-900 pb-2 text-xs font-mono text-gray-400">
+            <span>index.html (Source Code)</span>
+            <span class="text-[10px] uppercase text-green-500 font-extrabold font-sans bg-green-500/10 px-2 py-0.5 rounded">Editable</span>
+          </div>
+
+          <textarea id="sandbox-editor" rows="12" class="w-full bg-slate-900 text-green-400 font-mono text-xs p-3 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500 overflow-y-auto leading-normal whitespace-pre">
+<div class="card">
+  <h1>Welcome to Amoo Academy</h1>
+  <p>Learn premium skills from Harar, Ethiopia.</p>
+  <button class="btn">Explore All Courses</button>
+</div>
+
+<style>
+  body {
+    font-family: 'Helvetica Neue', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #f0fdf4;
+  }
+  .card {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    border: 1px solid #dcfce7;
+    max-width: 320px;
+  }
+  h1 {
+    color: #16a34a;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  p {
+    color: #4b5563;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .btn {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style></textarea>
+
+          <button id="run-sandbox" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md">
+            Run Code Output
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Output IFrame frame (7 Columns) -->
+      <div class="lg:col-span-7 flex flex-col gap-3">
+        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+          Live Browser Output Viewport
+        </div>
+        <div class="rounded-3xl border-4 border-gray-200 dark:border-slate-800 shadow-2xl h-[450px] bg-white overflow-hidden">
+          <iframe id="sandbox-iframe" class="w-full h-full bg-white border-0"></iframe>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 2. JAVASCRIPT CONCEPT QUIZ PANEL -->
+    <section id="quiz-panel" class="hidden max-w-2xl mx-auto w-full p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-xl flex flex-col gap-6 animate-fade-in">
+      
+      <!-- Quiz Header -->
+      <div class="border-b border-gray-100 dark:border-slate-700/50 pb-4 flex flex-col gap-1 text-center">
+        <h3 class="font-bold text-xl text-gray-900 dark:text-white font-display">Modern JavaScript Quiz</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Answer these 3 basic questions to test your JavaScript baseline competence!
+        </p>
+      </div>
+
+      <!-- Quiz Form -->
+      <form id="quiz-form" class="flex flex-col gap-6">
+        
+        <!-- Question 1 -->
+        <div class="flex flex-col gap-2.5">
+          <span class="text-sm font-bold text-gray-900 dark:text-white leading-tight">1. Which command displays messages in the browser console for debugging?</span>
+          <div class="flex flex-col gap-2 pl-2">
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q1" value="a" required class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>window.alert()</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q1" value="b" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>console.log()</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q1" value="c" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>document.write()</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="flex flex-col gap-2.5 pt-4 border-t border-gray-50 dark:border-slate-700/50">
+          <span class="text-sm font-bold text-gray-900 dark:text-white leading-tight">2. Which keyword is used to declare a block-scoped variable that CANNOT be reassigned?</span>
+          <div class="flex flex-col gap-2 pl-2">
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q2" value="a" required class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>let</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q2" value="b" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>var</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q2" value="c" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>const</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="flex flex-col gap-2.5 pt-4 border-t border-gray-50 dark:border-slate-700/50">
+          <span class="text-sm font-bold text-gray-900 dark:text-white leading-tight">3. What does LocalStorage save data as?</span>
+          <div class="flex flex-col gap-2 pl-2">
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q3" value="a" required class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>JSON Objects directly</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q3" value="b" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>Only Text Strings</span>
+            </label>
+            <label class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+              <input type="radio" name="q3" value="c" class="h-4 w-4 text-green-600 focus:ring-green-500">
+              <span>Array collections only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit Quiz -->
+        <button type="submit" class="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition-all shadow-md">
+          Evaluate Score
+        </button>
+
+      </form>
+
+      <!-- Quiz result placeholder -->
+      <div id="quiz-result" class="hidden p-5 rounded-2xl border text-center flex-col items-center gap-3">
+        <!-- Injected dynamically -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer Render Target -->
+  <footer id="main-footer"></footer>
+
+  <!-- Scripts -->
+  <script src="./script.js"></script>
+  <script>
+    // PAGE SPECIFIC LOGIC FOR DEMO.HTML
+    window.addEventListener('DOMContentLoaded', () => {
+      
+      // 1. Tab switches
+      const tSand = document.getElementById('toggle-sandbox');
+      const tQuiz = document.getElementById('toggle-quiz');
+      const panelSand = document.getElementById('sandbox-panel');
+      const panelQuiz = document.getElementById('quiz-panel');
+
+      tSand.onclick = () => {
+        tSand.className = 'px-6 py-4.5 text-sm font-bold border-b-2 border-green-500 text-green-600 dark:text-green-400 focus:outline-none transition-all';
+        tQuiz.className = 'px-6 py-4.5 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-white focus:outline-none transition-all';
+        panelSand.classList.remove('hidden');
+        panelQuiz.classList.add('hidden');
+      };
+
+      tQuiz.onclick = () => {
+        tQuiz.className = 'px-6 py-4.5 text-sm font-bold border-b-2 border-green-500 text-green-600 dark:text-green-400 focus:outline-none transition-all';
+        tSand.className = 'px-6 py-4.5 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-white focus:outline-none transition-all';
+        panelQuiz.classList.remove('hidden');
+        panelSand.classList.add('hidden');
+      };
+
+      // 2. HTML Sandbox Core Logic
+      const runBtn = document.getElementById('run-sandbox');
+      const editor = document.getElementById('sandbox-editor');
+      const iframe = document.getElementById('sandbox-iframe');
+
+      const executeCode = () => {
+        const code = editor.value;
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(code);
+        iframeDoc.close();
+      };
+
+      runBtn.onclick = executeCode;
+      executeCode(); // initial load execution
+
+      // 3. Quiz Core Evaluation Logic
+      const quizForm = document.getElementById('quiz-form');
+      const resultBox = document.getElementById('quiz-result');
+
+      quizForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        // Evaluate answers
+        const q1Val = quizForm.elements['q1'].value;
+        const q2Val = quizForm.elements['q2'].value;
+        const q3Val = quizForm.elements['q3'].value;
+
+        let score = 0;
+        let summaryHtml = '';
+
+        if (q1Val === 'b') score++; // console.log()
+        if (q2Val === 'c') score++; // const
+        if (q3Val === 'b') score++; // Text strings only
+
+        if (score === 3) {
+          resultBox.className = 'p-5 rounded-2xl border border-green-200 bg-green-50 dark:bg-green-950/20 text-green-800 dark:text-green-300 text-center flex flex-col items-center gap-2 animate-fade-in';
+          summaryHtml = `
+            <strong class="text-lg block">Perfect Score! 3 / 3 Answers Correct</strong>
+            <p class="text-xs leading-normal">Spectacular! You have outstanding coding foundations. Ready to dive deep and build real-world state applications?</p>
+            <a href="./enroll.html?course=javascript" class="mt-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs tracking-wider shadow">Register for JavaScript Class</a>
+          `;
+        } else if (score === 2) {
+          resultBox.className = 'p-5 rounded-2xl border border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 text-center flex flex-col items-center gap-2 animate-fade-in';
+          summaryHtml = `
+            <strong class="text-lg block">Good Effort! 2 / 3 Correct</strong>
+            <p class="text-xs leading-normal">Great job! You have solid logical traits. Let Amanuel teach you complex blocks and web interaction parameters.</p>
+            <a href="./enroll.html?course=javascript" class="mt-2 px-5 py-2.5 bg-yellow-500 text-white hover:bg-yellow-600 font-bold rounded-lg text-xs tracking-wider shadow">Enroll & Master Javascript</a>
+          `;
+        } else {
+          resultBox.className = 'p-5 rounded-2xl border border-red-200 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-400 text-center flex flex-col items-center gap-2 animate-fade-in';
+          summaryHtml = `
+            <strong class="text-lg block">Keep Learning! ${score} / 3 Correct</strong>
+            <p class="text-xs leading-normal">Don't worry! Everyone starts from zero. Our Modern JavaScript course assumes zero previous experience and guides you step-by-step.</p>
+            <a href="./courses.html" class="mt-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs tracking-wider shadow">Explore Study Catalog</a>
+          `;
+        }
+
+        resultBox.innerHTML = summaryHtml;
+        resultBox.classList.remove('hidden');
+        showToast(`Quiz Evaluated! Score: ${score}/3`, 'success');
+      };
+
+    });
+  </script>
+</body>
+</html>
