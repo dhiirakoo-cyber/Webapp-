@@ -211,10 +211,70 @@
     window.addEventListener('DOMContentLoaded', () => {
       // 1. Resolve course selection
       const urlParams = new URLSearchParams(window.location.search);
-      const courseId = urlParams.get('course') || 'html-css';
+      let courseId = urlParams.get('course') || 'html-css';
+      courseId = courseId.trim().toLowerCase();
 
-      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
-      const course = courses.find(c => c.id === courseId) || courses[0];
+      // Fallback array in case localStorage is empty or fails to load
+      const fallbackCourses = [
+        {
+          id: 'html-css',
+          title: 'HTML & CSS responsive design',
+          category: 'Programming',
+          image: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: 'javascript',
+          title: 'Modern JavaScript (ES6+)',
+          category: 'Programming',
+          image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: 'graphic-design',
+          title: 'Professional Graphic Design',
+          category: 'Creative',
+          image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: 'video-editing',
+          title: 'Cinematic Video Editing & Motion',
+          category: 'Creative',
+          image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: 'social-media-marketing',
+          title: 'Social Media & Brand Growth',
+          category: 'Marketing',
+          image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: 'contact-center-training',
+          title: 'Contact Center Operations',
+          category: 'Professional',
+          image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&q=80&w=800'
+        }
+      ];
+
+      // Ensure database is initialized from script.js
+      if (typeof initializeDatabase === 'function') {
+        initializeDatabase();
+      }
+
+      let courses = [];
+      try {
+        courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+      } catch (e) {
+        console.error('Failed to parse courses from localStorage', e);
+      }
+
+      if (!Array.isArray(courses) || courses.length === 0) {
+        courses = fallbackCourses;
+      }
+
+      // Find course case-insensitively
+      const course = courses.find(c => c.id.toLowerCase() === courseId) || 
+                     fallbackCourses.find(c => c.id.toLowerCase() === courseId) ||
+                     courses[0] || 
+                     fallbackCourses[0];
 
       if (course) {
         document.getElementById('summary-image').src = course.image;
