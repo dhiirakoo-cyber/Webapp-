@@ -273,6 +273,230 @@ function initializeDatabase() {
 // Global initialization
 initializeDatabase();
 
+// ----------------------------------------------------
+// SUPABASE REAL-TIME CLOUD INTEGRATION & AUTOMATIC SYNC
+// ----------------------------------------------------
+window.amooDb = {
+  isActive: false,
+  status: 'offline', // 'offline' | 'error' | 'connected' | 'missing_tables'
+  client: null,
+  config: {
+    url: '',
+    key: ''
+  },
+
+  async init() {
+    console.log('[Amoo Db] Initializing dual-persistence database engine...');
+    
+    // 1. Fetch config from server
+    try {
+      const res = await fetch('/api/config');
+      const configData = await res.json();
+      this.config.url = configData.supabaseUrl;
+      this.config.key = configData.supabaseKey;
+    } catch (e) {
+      console.warn('[Amoo Db] Failed to fetch server config, using defaults', e);
+      this.config.url = 'YOUR_SUPABASE_URL_AS_ITTI_GALCHI';
+      this.config.key = 'sb_publishable_Z-8LuYQrGv1BmC7c3oNyCg_zojgZvdS';
+    }
+
+    // 2. Validate config
+    const isPlaceholderUrl = !this.config.url || this.config.url.includes('YOUR_SUPABASE_URL_AS_ITTI_GALCHI');
+    
+    if (isPlaceholderUrl) {
+      this.status = 'offline';
+      console.log('[Amoo Db] No custom Supabase URL found. Running in Local Storage Mode.');
+      this.updateAdminUI();
+      return;
+    }
+
+    // 3. Initialize client
+    if (typeof window.supabase === 'undefined') {
+      console.error('[Amoo Db] Supabase CDN library is missing from HTML head.');
+      this.status = 'error';
+      this.updateAdminUI();
+      return;
+    }
+
+    try {
+      this.client = window.supabase.createClient(this.config.url, this.config.key);
+      this.isActive = true;
+      this.status = 'connected';
+      console.log('[Amoo Db] Supabase Client initialized successfully!');
+      
+      // 4. Test connection and synchronize/seed tables
+      await this.syncAndSeed();
+    } catch (e) {
+      console.error('[Amoo Db] Failed to connect to Supabase', e);
+      this.status = 'error';
+    }
+
+    this.updateAdminUI();
+  },
+
+  async syncAndSeed() {
+    if (!this.isActive || !this.client) return;
+
+    try {
+      // Test fetching amoo_courses
+      const { data: dbCourses, error: errC } = await this.client.from('amoo_courses').select('*');
+      
+      if (errC) {
+        console.warn('[Amoo Db] Could not fetch courses from Supabase. Table might be missing:', errC.message);
+        if (errC.message.includes('relation') || errC.message.includes('does not exist')) {
+          this.status = 'missing_tables';
+          return;
+        }
+        this.status = 'error';
+        return;
+      }
+
+      this.status = 'connected';
+      console.log('[Amoo Db] Database tables found and accessible.');
+
+      // Check if Supabase is completely empty (needs seeding)
+      if (dbCourses && dbCourses.length === 0) {
+        console.log('[Amoo Db] Supabase is empty. Seeding DEFAULT_COURSES to cloud...');
+        for (const course of DEFAULT_COURSES) {
+          await this.client.from('amoo_courses').upsert(course);
+        }
+        
+        console.log('[Amoo Db] Seeding DEFAULT_USERS to cloud...');
+        for (const user of DEFAULT_USERS) {
+          await this.client.from('amoo_users').upsert(user);
+        }
+
+        console.log('[Amoo Db] Seeding DEFAULT_ENROLLMENTS to cloud...');
+        for (const enrollment of DEFAULT_ENROLLMENTS) {
+          await this.client.from('amoo_enrollments').upsert(enrollment);
+        }
+        console.log('[Amoo Db] Seeding completed successfully!');
+        
+        // Reload page to reflect newly seeded courses
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        // Pull latest from Supabase and update local storage so UI is synchronized
+        if (dbCourses && dbCourses.length > 0) {
+          localStorage.setItem('amoo_courses', JSON.stringify(dbCourses));
+        }
+
+        const { data: dbUsers, error: errU } = await this.client.from('amoo_users').select('*');
+        if (!errU && dbUsers && dbUsers.length > 0) {
+          localStorage.setItem('amoo_users', JSON.stringify(dbUsers));
+        }
+
+        const { data: dbEnroll, error: errE } = await this.client.from('amoo_enrollments').select('*');
+        if (!errE && dbEnroll && dbEnroll.length > 0) {
+          localStorage.setItem('amoo_enrollments', JSON.stringify(dbEnroll));
+        }
+        console.log('[Amoo Db] Local storage successfully synchronized from cloud!');
+      }
+    } catch (e) {
+      console.error('[Amoo Db] Error during sync/seed operation', e);
+      this.status = 'error';
+    }
+  },
+
+  async save(key, data) {
+    if (!this.isActive || !this.client || this.status !== 'connected') return;
+
+    try {
+      let table = '';
+      let pk = '';
+      if (key === 'amoo_courses') { table = 'amoo_courses'; pk = 'id'; }
+      else if (key === 'amoo_users') { table = 'amoo_users'; pk = 'email'; }
+      else if (key === 'amoo_enrollments') { table = 'amoo_enrollments'; pk = 'id'; }
+      else return;
+
+      // 1. Handle deletions on cloud (if any items were removed locally)
+      const { data: dbItems, error: fetchErr } = await this.client.from(table).select(pk);
+      if (!fetchErr && dbItems) {
+        const localKeys = data.map(item => item[pk]);
+        const toDelete = dbItems.filter(dbItem => !localKeys.includes(dbItem[pk]));
+        
+        for (const itemToDelete of toDelete) {
+          await this.client.from(table).delete().eq(pk, itemToDelete[pk]);
+          console.log(`[Amoo Db] Deleted missing item from Supabase ${table}:`, itemToDelete[pk]);
+        }
+      }
+
+      // 2. Upsert current local items to cloud
+      for (const item of data) {
+        const cleanedItem = { ...item };
+        // Parse JSON fields to ensure they are valid for jsonb columns in Postgres
+        if (cleanedItem.curriculum && typeof cleanedItem.curriculum === 'string') {
+          try { cleanedItem.curriculum = JSON.parse(cleanedItem.curriculum); } catch(e){}
+        }
+        if (cleanedItem.benefits && typeof cleanedItem.benefits === 'string') {
+          try { cleanedItem.benefits = JSON.parse(cleanedItem.benefits); } catch(e){}
+        }
+        
+        const { error } = await this.client.from(table).upsert(cleanedItem);
+        if (error) {
+          console.error(`[Amoo Db] Error upserting ${table}:`, error);
+        }
+      }
+      console.log(`[Amoo Db] Successfully synchronized ${table} to cloud.`);
+    } catch (e) {
+      console.error('[Amoo Db] Error during auto-sync to cloud', e);
+    }
+  },
+
+  updateAdminUI() {
+    const badge = document.getElementById('supabase-status-badge');
+    const urlDisp = document.getElementById('supabase-url-display');
+    const keyDisp = document.getElementById('supabase-key-display');
+
+    if (urlDisp) {
+      urlDisp.textContent = this.config.url || 'Not configured';
+    }
+    if (keyDisp) {
+      keyDisp.textContent = this.config.key 
+        ? (this.config.key.length > 20 ? this.config.key.substr(0, 8) + '...' + this.config.key.substr(-8) : this.config.key)
+        : 'Not configured';
+    }
+
+    if (!badge) return;
+
+    if (this.status === 'offline') {
+      badge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
+      badge.textContent = 'Local Only (Offline)';
+    } else if (this.status === 'connected') {
+      badge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-green-500/10 text-green-600 dark:text-green-400';
+      badge.textContent = '● Connected & Synced';
+    } else if (this.status === 'missing_tables') {
+      badge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-red-500/10 text-red-600 dark:text-red-400 animate-pulse';
+      badge.textContent = '● Missing Tables';
+    } else {
+      badge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-red-500/10 text-red-600 dark:text-red-400';
+      badge.textContent = '● Connection Error';
+    }
+  }
+};
+
+// ----------------------------------------------------
+// AUTOMATIC STORAGE INTERCEPTOR HOOK
+// ----------------------------------------------------
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function(key, value) {
+  originalSetItem.apply(this, arguments);
+  if (window.amooDb && window.amooDb.isActive && ['amoo_courses', 'amoo_users', 'amoo_enrollments'].includes(key)) {
+    try {
+      const parsedValue = JSON.parse(value);
+      window.amooDb.save(key, parsedValue);
+    } catch(e) {
+      console.error('[Amoo Db] Auto-sync hook error', e);
+    }
+  }
+};
+
+// Launch Db Sync
+window.addEventListener('DOMContentLoaded', () => {
+  window.amooDb.init();
+});
+
 // Session User Retrieval Helpers
 function getLoggedUser() {
   const userJson = localStorage.getItem('amoo_logged_user');

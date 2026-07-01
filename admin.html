@@ -143,6 +143,104 @@
         <!-- Injected dynamically -->
       </div>
     </div>
+    
+    <!-- Supabase Integration Status Board -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col gap-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-100 dark:border-slate-700/60 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl bg-green-500/10 text-green-600 flex items-center justify-center">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-gray-900 dark:text-white font-display">Supabase Database Integration</h3>
+            <p class="text-xs text-gray-500">Real-time cloud database persistence</p>
+          </div>
+        </div>
+        <div id="supabase-status-badge" class="px-3 py-1 rounded-full text-xs font-bold font-mono">
+          Checking Status...
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-3">
+          <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+            Amoo Academy is fully equipped with an automatic dual-persistence engine. All course creation, student registrations, and enrollments will automatically save to local state and instantly synchronize with Supabase once configured!
+          </p>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 flex flex-col gap-2">
+            <span class="text-xs font-bold text-gray-400 uppercase">Connection Parameters</span>
+            <div class="flex flex-col gap-1 text-xs">
+              <div class="flex justify-between py-1 border-b border-gray-100 dark:border-slate-800">
+                <span class="text-gray-500">Supabase URL</span>
+                <span id="supabase-url-display" class="font-mono text-gray-800 dark:text-gray-200">Checking...</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-gray-500">Anon Key</span>
+                <span id="supabase-key-display" class="font-mono text-gray-800 dark:text-gray-200 text-right max-w-[180px] truncate">Checking...</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500">
+            * Note: To supply credentials, declare <code class="bg-gray-100 dark:bg-slate-700 px-1 py-0.5 rounded text-red-500 font-mono">SUPABASE_URL</code> and <code class="bg-gray-100 dark:bg-slate-700 px-1 py-0.5 rounded text-red-500 font-mono">SUPABASE_KEY</code> in your environment variables or <code class="bg-gray-100 dark:bg-slate-700 px-1 py-0.5 rounded text-green-500 font-mono">.env</code> file.
+          </p>
+        </div>
+        
+        <div class="flex flex-col gap-3">
+          <button onclick="document.getElementById('sql-schema-drawer').classList.toggle('hidden')" class="w-full py-2.5 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 pointer-events-auto">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            Show Supabase SQL Setup Script
+          </button>
+          
+          <div id="sql-schema-drawer" class="hidden flex flex-col gap-3">
+            <p class="text-xs text-gray-500">Copy and run this schema script inside your Supabase SQL Editor to instantly bootstrap the required database structure:</p>
+            <div class="relative">
+              <pre class="bg-slate-950 text-slate-300 text-[10px] p-4 rounded-xl overflow-x-auto max-h-[180px] font-mono leading-normal select-all">-- Amoo Academy Database Schema
+CREATE TABLE amoo_courses (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  category TEXT,
+  rating NUMERIC,
+  price NUMERIC,
+  reviews INTEGER,
+  duration TEXT,
+  level TEXT,
+  image TEXT,
+  description TEXT,
+  curriculum JSONB,
+  benefits JSONB
+);
+
+CREATE TABLE amoo_users (
+  email TEXT PRIMARY KEY,
+  username TEXT,
+  name TEXT,
+  phone TEXT,
+  password TEXT,
+  role TEXT
+);
+
+CREATE TABLE amoo_enrollments (
+  id TEXT PRIMARY KEY,
+  "studentName" TEXT,
+  "studentEmail" TEXT,
+  "studentPhone" TEXT,
+  "courseId" TEXT,
+  "courseName" TEXT,
+  price NUMERIC,
+  "paymentMethod" TEXT,
+  "paymentDetails" TEXT,
+  status TEXT,
+  date TEXT
+);</pre>
+              <button onclick="navigator.clipboard.writeText(document.querySelector('#sql-schema-drawer pre').textContent); showToast('SQL copied to clipboard!', 'success')" class="absolute top-2 right-2 p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 text-[10px] font-bold">
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
@@ -221,6 +319,7 @@
   <footer id="main-footer"></footer>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./script.js"></script>
   <script>
     // PAGE SPECIFIC LOGIC FOR ADMIN.HTML
