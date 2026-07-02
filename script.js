@@ -753,54 +753,59 @@ function renderNavbar() {
           ${menuHtml}
         </nav>
 
-        <!-- Right Side: Dark Mode & Auth -->
-        <div class="hidden md:flex items-center gap-5">
-          <!-- Bento Language Toggle Button -->
-          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
-            <button id="lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
-              EN
-            </button>
-            <button id="lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
-              AO
+        <!-- Right Side: Controls & Auth -->
+        <div class="flex items-center gap-2 sm:gap-4 md:gap-5">
+          <!-- Desktop Toggles (Hidden on mobile) -->
+          <div class="hidden md:flex items-center gap-4">
+            <!-- Bento Language Toggle Button -->
+            <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+              <button id="lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+                EN
+              </button>
+              <button id="lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+                AO
+              </button>
+            </div>
+
+            <!-- Dark Mode Toggle Button -->
+            <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors focus:outline-none">
+              ${isDarkMode 
+                ? `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>` 
+                : `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`
+              }
             </button>
           </div>
 
-          <!-- Dark Mode Toggle Button -->
-          <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors focus:outline-none">
-            ${isDarkMode 
-              ? `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>` 
-              : `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`
-            }
-          </button>
-          
-          <!-- CTA/Auth Section -->
-          ${authHtml}
-        </div>
-
-        <!-- Mobile Controls Toggle -->
-        <div class="flex items-center gap-3 md:hidden">
-          <!-- Mobile Bento Language Toggle -->
-          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
-            <button id="mob-lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
-              EN
-            </button>
-            <button id="mob-lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
-              AO
-            </button>
+          <!-- CTA/Auth Section (Always visible, responsive size) -->
+          <div class="flex items-center gap-2 sm:gap-3">
+            ${authHtml}
           </div>
 
-          <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors">
-            ${isDarkMode 
-              ? `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>` 
-              : `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`
-            }
-          </button>
-          
-          <button id="mobile-menu-toggle" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-800 focus:outline-none">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-          </button>
+          <!-- Mobile Extra Toggles & Hamburger (Only visible on mobile) -->
+          <div class="flex items-center gap-2 md:hidden">
+            <!-- Mobile Bento Language Toggle -->
+            <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+              <button id="mob-lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+                EN
+              </button>
+              <button id="mob-lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+                AO
+              </button>
+            </div>
+
+            <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors">
+              ${isDarkMode 
+                ? `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>` 
+                : `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`
+              }
+            </button>
+            
+            <button id="mobile-menu-toggle" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-800 focus:outline-none">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
