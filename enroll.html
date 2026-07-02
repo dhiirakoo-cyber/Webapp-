@@ -262,7 +262,7 @@
 
       let courses = [];
       try {
-        courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+        courses = JSON.parse(localStorage.getItem('courses') || '[]');
       } catch (e) {
         console.error('Failed to parse courses from localStorage', e);
       }
@@ -350,7 +350,7 @@
 
       // 4. Form submission handler
       const form = document.getElementById('enrollment-form');
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
 
         const name = document.getElementById('enroll-name').value;
@@ -367,7 +367,6 @@
         }
 
         // Generate enrollment record
-        const enrollments = JSON.parse(localStorage.getItem('amoo_enrollments') || '[]');
         const enrId = 'ENR-' + Math.floor(1000 + Math.random() * 9000);
 
         const newEnrollment = {
@@ -381,11 +380,27 @@
           paymentMethod: selectedPm,
           paymentDetails: refId,
           status: 'pending',
+          payment_status: 'Pending',
           date: new Date().toISOString().split('T')[0]
         };
 
+        // Save directly to Supabase if active
+        if (window.amooDb && window.amooDb.isActive && window.amooDb.client) {
+          try {
+            const { error } = await window.amooDb.client.from('enrollments').insert(newEnrollment);
+            if (error) throw error;
+            console.log('[Amoo Db] Enrollment saved directly to Supabase!');
+          } catch (err) {
+            console.error('[Amoo Db] Direct Supabase enrollment failed:', err);
+            showToast('Enrollment failed on cloud. Please try again.', 'error');
+            return;
+          }
+        }
+
+        // Save to local cache
+        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
         enrollments.push(newEnrollment);
-        localStorage.setItem('amoo_enrollments', JSON.stringify(enrollments));
+        localStorage.setItem('enrollments', JSON.stringify(enrollments));
 
         // Display Success popup
         document.getElementById('success-ref').textContent = refId;

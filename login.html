@@ -124,15 +124,32 @@
       }
 
       const form = document.getElementById('login-form');
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
         
         const email = document.getElementById('login-email').value.trim().toLowerCase();
         const password = document.getElementById('login-password').value;
 
-        // Fetch users database
-        const users = JSON.parse(localStorage.getItem('amoo_users') || '[]');
-        const user = users.find(u => u.email === email);
+        let user = null;
+
+        // 1. Direct query from Supabase if active
+        if (window.amooDb && window.amooDb.isActive && window.amooDb.client) {
+          try {
+            const { data, error } = await window.amooDb.client.from('students').select('*').eq('email', email).maybeSingle();
+            if (!error && data) {
+              user = data;
+              console.log('[Amoo Db] User retrieved directly from Supabase students table!');
+            }
+          } catch (err) {
+            console.warn('[Amoo Db] Supabase login query failed, falling back to local cache', err);
+          }
+        }
+
+        // 2. Fallback to LocalStorage
+        if (!user) {
+          const students = JSON.parse(localStorage.getItem('students') || '[]');
+          user = students.find(u => u.email === email);
+        }
 
         if (!user) {
           showToast('Account not found. Please register.', 'error');

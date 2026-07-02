@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env if present
+dotenv.config();
 
 const filesToCopy = [
   'index.html',
@@ -20,7 +24,7 @@ const dirsToCopy = [
 ];
 
 function build() {
-  console.log('[Amoo Academy Build] Starting build...');
+  console.log('[Amoo Academy Build] Starting static build...');
   const distDir = path.join(process.cwd(), 'dist');
 
   // Clean old dist
@@ -39,8 +43,26 @@ function build() {
     const destPath = path.join(distDir, file);
 
     if (fs.existsSync(srcPath)) {
-      fs.copyFileSync(srcPath, destPath);
-      console.log(`[Amoo Academy Build] Copied ${file} to dist/`);
+      if (file.endsWith('.html')) {
+        let content = fs.readFileSync(srcPath, 'utf8');
+        const supabaseUrl = process.env.SUPABASE_URL || '';
+        const supabaseKey = process.env.SUPABASE_KEY || '';
+        
+        // Inject Supabase environment variables into the head
+        content = content.replace(
+          '</head>',
+          `  <script>
+    window.SUPABASE_URL = ${JSON.stringify(supabaseUrl)};
+    window.SUPABASE_KEY = ${JSON.stringify(supabaseKey)};
+  </script>
+</head>`
+        );
+        fs.writeFileSync(destPath, content, 'utf8');
+        console.log(`[Amoo Academy Build] Injected variables and copied ${file} to dist/`);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+        console.log(`[Amoo Academy Build] Copied ${file} to dist/`);
+      }
     } else {
       console.warn(`[Amoo Academy Build] Warning: ${file} not found.`);
     }
@@ -61,7 +83,7 @@ function build() {
     }
   });
 
-  console.log('[Amoo Academy Build] Build completed successfully!');
+  console.log('[Amoo Academy Build] Static build completed successfully!');
 }
 
 function copyFolderSync(from, to) {

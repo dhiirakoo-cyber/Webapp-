@@ -159,7 +159,7 @@
       }
 
       const form = document.getElementById('register-form');
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
 
         const name = document.getElementById('reg-name').value.trim();
@@ -169,16 +169,50 @@
         const password = document.getElementById('reg-password').value;
 
         // Validation checks
-        const users = JSON.parse(localStorage.getItem('amoo_users') || '[]');
-        
-        // Check if email already registered
-        if (users.some(u => u.email === email)) {
+        let emailExists = false;
+        let usernameExists = false;
+
+        // 1. Direct collision checking in Supabase
+        if (window.amooDb && window.amooDb.isActive && window.amooDb.client) {
+          try {
+            console.log('[Amoo Db] Checking "students" table for duplicates...');
+            const { data: studentEmailUser, error: emailErr } = await window.amooDb.client.from('students').select('email').eq('email', email).maybeSingle();
+            if (emailErr) {
+              console.error('[Amoo Db] Error checking "students" for duplicate email:', emailErr);
+            }
+            if (studentEmailUser) {
+              console.log('[Amoo Db] Duplicate email found in "students" table:', email);
+              emailExists = true;
+            }
+
+            const { data: studentUsernameUser, error: userErr } = await window.amooDb.client.from('students').select('username').eq('username', username).maybeSingle();
+            if (userErr) {
+              console.error('[Amoo Db] Error checking "students" for duplicate username:', userErr);
+            }
+            if (studentUsernameUser) {
+              console.log('[Amoo Db] Duplicate username found in "students" table:', username);
+              usernameExists = true;
+            }
+          } catch(err) {
+            console.error('[Amoo Db] Supabase collision checking exception:', err);
+          }
+        }
+
+        // 2. Double-check local storage cache fallback
+        const students = JSON.parse(localStorage.getItem('students') || '[]');
+        if (!emailExists && students.some(u => u.email === email)) {
+          emailExists = true;
+        }
+        if (!usernameExists && students.some(u => u.username === username)) {
+          usernameExists = true;
+        }
+
+        if (emailExists) {
           showToast('An account with this email already exists!', 'error');
           return;
         }
 
-        // Check if username already exists
-        if (users.some(u => u.username === username)) {
+        if (usernameExists) {
           showToast('This username is already taken!', 'error');
           return;
         }
@@ -193,9 +227,35 @@
           role: 'student' // standard student
         };
 
-        // Save to LocalStorage database
-        users.push(newUser);
-        localStorage.setItem('amoo_users', JSON.stringify(users));
+        // 3. Save directly to Supabase
+        if (window.amooDb && window.amooDb.isActive && window.amooDb.client) {
+          let insertSuccess = false;
+
+          // Insert into 'students' table using Supabase client
+          try {
+            console.log('[Amoo Db] Inserting student record into "students" table...');
+            const { error: studentInsertErr } = await window.amooDb.client.from('students').insert(newUser);
+            
+            if (studentInsertErr) {
+              console.error('[Amoo Db] Failed to insert student record into "students" table:', studentInsertErr);
+            } else {
+              console.log('[Amoo Db] Successfully inserted student into "students" table!');
+              insertSuccess = true;
+            }
+          } catch (err) {
+            console.error('[Amoo Db] Critical exception when inserting into "students" table:', err);
+          }
+
+          // If table insertion failed, log it to the browser console and show toast
+          if (!insertSuccess && window.amooDb.status === 'connected') {
+            showToast('Registration failed on cloud database. Please check console errors.', 'error');
+            return;
+          }
+        }
+
+        // Update local cache
+        students.push(newUser);
+        localStorage.setItem('students', JSON.stringify(students));
 
         // Automatically log user in
         localStorage.setItem('amoo_logged_user', JSON.stringify(newUser));

@@ -140,7 +140,7 @@
   <script>
     // PAGE SPECIFIC LOGIC FOR COURSES.HTML
     window.addEventListener('DOMContentLoaded', () => {
-      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+      let courses = JSON.parse(localStorage.getItem('courses') || '[]');
       
       let activeCategory = 'all';
       let searchQuery = '';
@@ -230,12 +230,40 @@
                 </p>
                 
                 <div class="mt-auto pt-4 border-t border-gray-50 dark:border-slate-700/50 grid grid-cols-2 gap-3">
-                  <a href="./course-details.html?id=${course.id}" class="py-2.5 text-center text-xs font-bold text-green-600 hover:text-green-700 dark:text-green-400 border border-green-500/10 hover:border-green-500/20 rounded-lg hover:underline">
-                    View Curriculum
+                  <a href="./course-details.html?id=${course.id}" class="py-2.5 text-center text-xs font-bold text-green-600 hover:text-green-700 dark:text-green-400 border border-green-500/10 hover:border-green-500/20 rounded-lg hover:underline flex items-center justify-center">
+                    View Detail
                   </a>
-                  <a href="./enroll.html?course=${course.id}" class="py-2.5 px-3 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-bold rounded-lg shadow-sm transition-colors">
-                    Enroll Now
-                  </a>
+                  \${(() => {
+                    const enr = typeof getUserEnrollment === 'function' ? getUserEnrollment(course.id) : null;
+                    if (enr) {
+                      const pStat = (enr.payment_status || enr.status || 'Pending').toLowerCase();
+                      if (pStat === 'approved') {
+                        return `
+                          <a href="./demo.html?course=${course.id}" class="py-2.5 px-2 bg-indigo-600 hover:bg-indigo-700 text-white text-center text-xs font-extrabold rounded-lg shadow-sm transition-colors flex items-center justify-center">
+                            Access Course
+                          </a>
+                        `;
+                      } else if (pStat === 'pending') {
+                        return `
+                          <button onclick="showToast('Your payment reference is in manual review. Amanuel will activate access soon!', 'info')" class="py-2.5 px-2 bg-yellow-500 text-white text-center text-[10px] font-extrabold rounded-lg shadow-sm cursor-help flex items-center justify-center">
+                            In Review
+                          </button>
+                        `;
+                      } else {
+                        return `
+                          <a href="./enroll.html?course=${course.id}" class="py-2.5 px-2 bg-red-600 hover:bg-red-700 text-white text-center text-xs font-extrabold rounded-lg shadow-sm transition-colors flex items-center justify-center">
+                            Retry Enroll
+                          </a>
+                        `;
+                      }
+                    } else {
+                      return `
+                        <a href="./enroll.html?course=${course.id}" class="py-2.5 px-2 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-extrabold rounded-lg shadow-sm transition-colors flex items-center justify-center">
+                          Enroll Now
+                        </a>
+                      `;
+                    }
+                  })()}
                 </div>
               </div>
             </div>
@@ -291,6 +319,11 @@
 
       // Run initial draw
       filterAndDraw();
+
+      window.addEventListener('amoo-db-synced', () => {
+        courses = JSON.parse(localStorage.getItem('courses') || '[]');
+        filterAndDraw();
+      });
     });
   </script>
 </body>

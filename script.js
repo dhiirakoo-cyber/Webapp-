@@ -259,14 +259,14 @@ const DEFAULT_ENROLLMENTS = [
 
 // Initial Database Seeding function
 function initializeDatabase() {
-  if (!localStorage.getItem('amoo_courses')) {
-    localStorage.setItem('amoo_courses', JSON.stringify(DEFAULT_COURSES));
+  if (!localStorage.getItem('courses')) {
+    localStorage.setItem('courses', JSON.stringify(DEFAULT_COURSES));
   }
-  if (!localStorage.getItem('amoo_users')) {
-    localStorage.setItem('amoo_users', JSON.stringify(DEFAULT_USERS));
+  if (!localStorage.getItem('students')) {
+    localStorage.setItem('students', JSON.stringify(DEFAULT_USERS));
   }
-  if (!localStorage.getItem('amoo_enrollments')) {
-    localStorage.setItem('amoo_enrollments', JSON.stringify(DEFAULT_ENROLLMENTS));
+  if (!localStorage.getItem('enrollments')) {
+    localStorage.setItem('enrollments', JSON.stringify(DEFAULT_ENROLLMENTS));
   }
 }
 
@@ -278,6 +278,7 @@ initializeDatabase();
 // ----------------------------------------------------
 window.amooDb = {
   isActive: false,
+  isSyncing: false,
   status: 'offline', // 'offline' | 'error' | 'connected' | 'missing_tables'
   client: null,
   config: {
@@ -288,17 +289,9 @@ window.amooDb = {
   async init() {
     console.log('[Amoo Db] Initializing dual-persistence database engine...');
     
-    // 1. Fetch config from server
-    try {
-      const res = await fetch('/api/config');
-      const configData = await res.json();
-      this.config.url = configData.supabaseUrl;
-      this.config.key = configData.supabaseKey;
-    } catch (e) {
-      console.warn('[Amoo Db] Failed to fetch server config, using defaults', e);
-      this.config.url = 'YOUR_SUPABASE_URL_AS_ITTI_GALCHI';
-      this.config.key = 'sb_publishable_Z-8LuYQrGv1BmC7c3oNyCg_zojgZvdS';
-    }
+    // 1. Load config from global window variables or client-side localStorage fallback (for GitHub Pages)
+    this.config.url = window.SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || '';
+    this.config.key = window.SUPABASE_KEY || localStorage.getItem('SUPABASE_KEY') || '';
 
     // 2. Validate config
     const isPlaceholderUrl = !this.config.url || this.config.url.includes('YOUR_SUPABASE_URL_AS_ITTI_GALCHI');
@@ -337,17 +330,25 @@ window.amooDb = {
   async syncAndSeed() {
     if (!this.isActive || !this.client) return;
 
+    this.isSyncing = true;
     try {
-      // Test fetching amoo_courses
-      const { data: dbCourses, error: errC } = await this.client.from('amoo_courses').select('*');
+      // Test fetching courses, students, enrollments
+      const { data: dbCourses, error: errC } = await this.client.from('courses').select('*');
+      const { data: dbUsers, error: errU } = await this.client.from('students').select('*');
+      const { data: dbEnroll, error: errE } = await this.client.from('enrollments').select('*');
       
-      if (errC) {
-        console.warn('[Amoo Db] Could not fetch courses from Supabase. Table might be missing:', errC.message);
-        if (errC.message.includes('relation') || errC.message.includes('does not exist')) {
+      if (errC || errU || errE) {
+        const errorMsg = (errC?.message || errU?.message || errE?.message || '');
+        console.warn('[Amoo Db] Could not fetch some tables from Supabase. Tables might be missing:', errorMsg);
+        if (errorMsg.includes('relation') || errorMsg.includes('does not exist')) {
           this.status = 'missing_tables';
+          this.isSyncing = false;
+          this.updateAdminUI();
           return;
         }
         this.status = 'error';
+        this.isSyncing = false;
+        this.updateAdminUI();
         return;
       }
 
@@ -358,20 +359,21 @@ window.amooDb = {
       if (dbCourses && dbCourses.length === 0) {
         console.log('[Amoo Db] Supabase is empty. Seeding DEFAULT_COURSES to cloud...');
         for (const course of DEFAULT_COURSES) {
-          await this.client.from('amoo_courses').upsert(course);
+          await this.client.from('courses').upsert(course);
         }
         
         console.log('[Amoo Db] Seeding DEFAULT_USERS to cloud...');
         for (const user of DEFAULT_USERS) {
-          await this.client.from('amoo_users').upsert(user);
+          await this.client.from('students').upsert(user);
         }
 
         console.log('[Amoo Db] Seeding DEFAULT_ENROLLMENTS to cloud...');
         for (const enrollment of DEFAULT_ENROLLMENTS) {
-          await this.client.from('amoo_enrollments').upsert(enrollment);
+          await this.client.from('enrollments').upsert(enrollment);
         }
         console.log('[Amoo Db] Seeding completed successfully!');
         
+        this.isSyncing = false;
         // Reload page to reflect newly seeded courses
         setTimeout(() => {
           window.location.reload();
@@ -379,23 +381,24 @@ window.amooDb = {
       } else {
         // Pull latest from Supabase and update local storage so UI is synchronized
         if (dbCourses && dbCourses.length > 0) {
-          localStorage.setItem('amoo_courses', JSON.stringify(dbCourses));
+          localStorage.setItem('courses', JSON.stringify(dbCourses));
         }
 
-        const { data: dbUsers, error: errU } = await this.client.from('amoo_users').select('*');
-        if (!errU && dbUsers && dbUsers.length > 0) {
-          localStorage.setItem('amoo_users', JSON.stringify(dbUsers));
+        if (dbUsers && dbUsers.length > 0) {
+          localStorage.setItem('students', JSON.stringify(dbUsers));
         }
 
-        const { data: dbEnroll, error: errE } = await this.client.from('amoo_enrollments').select('*');
-        if (!errE && dbEnroll && dbEnroll.length > 0) {
-          localStorage.setItem('amoo_enrollments', JSON.stringify(dbEnroll));
+        if (dbEnroll && dbEnroll.length > 0) {
+          localStorage.setItem('enrollments', JSON.stringify(dbEnroll));
         }
         console.log('[Amoo Db] Local storage successfully synchronized from cloud!');
+        this.isSyncing = false;
+        window.dispatchEvent(new CustomEvent('amoo-db-synced'));
       }
     } catch (e) {
       console.error('[Amoo Db] Error during sync/seed operation', e);
       this.status = 'error';
+      this.isSyncing = false;
     }
   },
 
@@ -405,9 +408,9 @@ window.amooDb = {
     try {
       let table = '';
       let pk = '';
-      if (key === 'amoo_courses') { table = 'amoo_courses'; pk = 'id'; }
-      else if (key === 'amoo_users') { table = 'amoo_users'; pk = 'email'; }
-      else if (key === 'amoo_enrollments') { table = 'amoo_enrollments'; pk = 'id'; }
+      if (key === 'courses') { table = 'courses'; pk = 'id'; }
+      else if (key === 'students') { table = 'students'; pk = 'email'; }
+      else if (key === 'enrollments') { table = 'enrollments'; pk = 'id'; }
       else return;
 
       // 1. Handle deletions on cloud (if any items were removed locally)
@@ -448,6 +451,7 @@ window.amooDb = {
     const badge = document.getElementById('supabase-status-badge');
     const urlDisp = document.getElementById('supabase-url-display');
     const keyDisp = document.getElementById('supabase-key-display');
+    const warningContainer = document.getElementById('db-warning-container');
 
     if (urlDisp) {
       urlDisp.textContent = this.config.url || 'Not configured';
@@ -456,6 +460,33 @@ window.amooDb = {
       keyDisp.textContent = this.config.key 
         ? (this.config.key.length > 20 ? this.config.key.substr(0, 8) + '...' + this.config.key.substr(-8) : this.config.key)
         : 'Not configured';
+    }
+
+    if (warningContainer) {
+      if (this.status === 'missing_tables') {
+        warningContainer.className = 'block';
+        warningContainer.innerHTML = `
+          <div class="p-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-900 dark:text-red-200 flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div class="p-3 rounded-xl bg-red-500 text-white flex items-center justify-center shrink-0">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-bold text-base">Supabase Connection Succeeded, But Database Tables Are Missing!</h4>
+              <p class="text-xs text-red-700 dark:text-red-300 mt-1">
+                Please copy the setup script below, paste it into your <strong>Supabase SQL Editor</strong>, and click <strong>Run</strong>. Once the tables are created, refresh this page and the system will automatically seed your tables with courses, users, and transactions!
+              </p>
+            </div>
+            <button onclick="document.getElementById('sql-schema-drawer').classList.remove('hidden'); document.getElementById('sql-schema-drawer').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-colors shrink-0 uppercase tracking-wider">
+              View Setup SQL
+            </button>
+          </div>
+        `;
+      } else {
+        warningContainer.className = 'hidden';
+        warningContainer.innerHTML = '';
+      }
     }
 
     if (!badge) return;
@@ -482,7 +513,7 @@ window.amooDb = {
 const originalSetItem = localStorage.setItem;
 localStorage.setItem = function(key, value) {
   originalSetItem.apply(this, arguments);
-  if (window.amooDb && window.amooDb.isActive && ['amoo_courses', 'amoo_users', 'amoo_enrollments'].includes(key)) {
+  if (window.amooDb && window.amooDb.isActive && !window.amooDb.isSyncing && ['courses', 'students', 'enrollments'].includes(key)) {
     try {
       const parsedValue = JSON.parse(value);
       window.amooDb.save(key, parsedValue);
@@ -510,6 +541,17 @@ function isLoggedIn() {
 function isAdmin() {
   const user = getLoggedUser();
   return user && user.role === 'admin';
+}
+
+function getUserEnrollment(courseId) {
+  const user = getLoggedUser();
+  if (!user) return null;
+  const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+  return enrollments.find(e => {
+    const emailMatch = e.studentEmail && e.studentEmail.toLowerCase() === user.email.toLowerCase();
+    const courseMatch = e.courseId && e.courseId.toLowerCase() === courseId.toLowerCase();
+    return emailMatch && courseMatch;
+  });
 }
 
 function logoutUser() {
@@ -590,53 +632,61 @@ function renderNavbar() {
   header.className = 'sticky top-0 z-50 w-full glass-header border-b border-gray-200 dark:border-slate-800/80 transition-colors duration-300';
 
   const menuItems = [
-    { label: 'Home', href: './index.html', active: isPage('index.html') || currentPath === '/' || currentPath.endsWith('/') },
-    { label: 'Courses', href: './courses.html', active: isPage('courses.html') || isPage('course-details.html') },
-    { label: 'Interactive Demo', href: './demo.html', active: isPage('demo.html') }
+    { label: 'Home', href: './index.html', active: isPage('index.html') || currentPath === '/' || currentPath.endsWith('/'), en: 'Home', ao: 'Dhaabbata' },
+    { label: 'Courses', href: './courses.html', active: isPage('courses.html') || isPage('course-details.html'), en: 'Courses', ao: 'Koorsiiwwan' },
+    { label: 'Interactive Demo', href: './demo.html', active: isPage('demo.html'), en: 'Interactive Demo', ao: 'Dimoo' }
   ];
 
   if (user && user.role === 'admin') {
-    menuItems.push({ label: 'Admin Panel', href: './admin.html', active: isPage('admin.html') });
+    menuItems.push({ label: 'Admin Panel', href: './admin.html', active: isPage('admin.html'), en: 'Admin Panel', ao: 'Garee Bulchiinsaa' });
   }
 
   // Draw Desktop items
-  const menuHtml = menuItems.map(item => `
-    <a id="nav-${item.label.toLowerCase().replace(/\s+/g, '-')}" href="${item.href}" class="text-sm font-semibold transition-colors duration-200 ${
-      item.active 
-        ? 'text-green-600 dark:text-green-400 font-bold border-b-2 border-green-500 py-1' 
-        : 'text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400'
-    }">
-      ${item.label}
-    </a>
-  `).join('');
+  const menuHtml = menuItems.map(item => {
+    const text = (window.amooLang && window.amooLang.currentLang === 'ao') ? item.ao : item.en;
+    return `
+      <a id="nav-${item.label.toLowerCase().replace(/\s+/g, '-')}" href="${item.href}" data-en="${item.en}" data-ao="${item.ao}" class="text-sm font-semibold transition-colors duration-200 ${
+        item.active 
+          ? 'text-green-600 dark:text-green-400 font-bold border-b-2 border-green-500 py-1' 
+          : 'text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400'
+      }">
+        ${text}
+      </a>
+    `;
+  }).join('');
 
   // Mobile drawer links
-  const mobileMenuHtml = menuItems.map(item => `
-    <a href="${item.href}" class="px-4 py-3 rounded-lg text-base font-semibold border-l-4 transition-all duration-150 ${
-      item.active 
-        ? 'bg-green-50 text-green-700 border-green-500 dark:bg-slate-800 dark:text-green-400' 
-        : 'text-gray-600 hover:bg-gray-50 border-transparent dark:text-gray-300 dark:hover:bg-slate-800'
-    }">
-      ${item.label}
-    </a>
-  `).join('');
+  const mobileMenuHtml = menuItems.map(item => {
+    const text = (window.amooLang && window.amooLang.currentLang === 'ao') ? item.ao : item.en;
+    return `
+      <a href="${item.href}" data-en="${item.en}" data-ao="${item.ao}" class="px-4 py-3 rounded-lg text-base font-semibold border-l-4 transition-all duration-150 ${
+        item.active 
+          ? 'bg-green-50 text-green-700 border-green-500 dark:bg-slate-800 dark:text-green-400' 
+          : 'text-gray-600 hover:bg-gray-50 border-transparent dark:text-gray-300 dark:hover:bg-slate-800'
+      }">
+        ${text}
+      </a>
+    `;
+  }).join('');
 
   // Auth Button configuration
   let authHtml = '';
   let mobileAuthHtml = '';
 
+  const isAo = (window.amooLang && window.amooLang.currentLang === 'ao');
+
   if (user) {
     authHtml = `
       <div class="flex items-center gap-4">
         <div class="hidden xl:flex flex-col items-end">
-          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Welcome,</span>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400" data-en="Welcome," data-ao="Baga Garaa Galtan,">${isAo ? 'Baga Garaa Galtan,' : 'Welcome,'}</span>
           <span class="text-sm font-bold text-gray-800 dark:text-gray-100">${user.name}</span>
         </div>
         <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-green-500 to-green-700 text-white font-bold flex items-center justify-center text-sm border-2 border-green-100 shadow-md">
           ${user.name.split(' ').map(n => n[0]).join('').substr(0,2).toUpperCase()}
         </div>
-        <button id="logout-btn" class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors duration-150">
-          Sign Out
+        <button id="logout-btn" data-en="Sign Out" data-ao="Bahi" class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors duration-150">
+          ${isAo ? 'Bahi' : 'Sign Out'}
         </button>
       </div>
     `;
@@ -652,30 +702,30 @@ function renderNavbar() {
             <div class="text-xs text-gray-500 dark:text-gray-400">${user.email}</div>
           </div>
         </div>
-        <button id="mobile-logout-btn" class="w-full py-2.5 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-colors text-center text-sm">
-          Sign Out
+        <button id="mobile-logout-btn" data-en="Sign Out" data-ao="Bahi" class="w-full py-2.5 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-colors text-center text-sm">
+          ${isAo ? 'Bahi' : 'Sign Out'}
         </button>
       </div>
     `;
   } else {
     authHtml = `
       <div class="flex items-center gap-3">
-        <a id="nav-login-btn" href="./login.html" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">
-          Sign In
+        <a id="nav-login-btn" href="./login.html" data-en="Sign In" data-ao="Seeni" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">
+          ${isAo ? 'Seeni' : 'Sign In'}
         </a>
-        <a id="nav-register-btn" href="./register.html" class="px-5 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm hover:shadow transition-all duration-150 transform hover:-translate-y-0.5">
-          Join Free
+        <a id="nav-register-btn" href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="px-5 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm hover:shadow transition-all duration-150 transform hover:-translate-y-0.5">
+          ${isAo ? 'Miseensomi' : 'Join Free'}
         </a>
       </div>
     `;
 
     mobileAuthHtml = `
       <div class="flex flex-col gap-2 p-4 border-t border-gray-100 dark:border-slate-800">
-        <a href="./login.html" class="w-full py-2.5 text-center font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg text-sm border border-gray-200 dark:border-slate-700">
-          Sign In
+        <a href="./login.html" data-en="Sign In" data-ao="Seeni" class="w-full py-2.5 text-center font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg text-sm border border-gray-200 dark:border-slate-700">
+          ${isAo ? 'Seeni' : 'Sign In'}
         </a>
-        <a href="./register.html" class="w-full py-2.5 text-center font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm shadow-sm">
-          Join Free
+        <a href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="w-full py-2.5 text-center font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm shadow-sm">
+          ${isAo ? 'Miseensomi' : 'Join Free'}
         </a>
       </div>
     `;
@@ -705,6 +755,16 @@ function renderNavbar() {
 
         <!-- Right Side: Dark Mode & Auth -->
         <div class="hidden md:flex items-center gap-5">
+          <!-- Bento Language Toggle Button -->
+          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+            <button id="lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+              EN
+            </button>
+            <button id="lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+              AO
+            </button>
+          </div>
+
           <!-- Dark Mode Toggle Button -->
           <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors focus:outline-none">
             ${isDarkMode 
@@ -719,6 +779,16 @@ function renderNavbar() {
 
         <!-- Mobile Controls Toggle -->
         <div class="flex items-center gap-3 md:hidden">
+          <!-- Mobile Bento Language Toggle -->
+          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+            <button id="mob-lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${!window.amooLang || window.amooLang.currentLang === 'en' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+              EN
+            </button>
+            <button id="mob-lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 ${window.amooLang && window.amooLang.currentLang === 'ao' ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}">
+              AO
+            </button>
+          </div>
+
           <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors">
             ${isDarkMode 
               ? `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>` 
@@ -870,6 +940,94 @@ function renderFooter() {
   `;
 }
 
+// ----------------------------------------------------
+// BILINGUAL LANGUAGE ENGINE (ENGLISH & AFAAN OROMOO)
+// ----------------------------------------------------
+window.amooLang = {
+  currentLang: 'en',
+
+  init() {
+    try {
+      this.currentLang = localStorage.getItem('amoo_lang') || 'en';
+      if (!['en', 'ao'].includes(this.currentLang)) {
+        this.currentLang = 'en';
+      }
+      this.applyLanguage();
+    } catch (e) {
+      console.error('[Amoo Lang] Initialization failed:', e);
+    }
+  },
+
+  setLanguage(lang) {
+    try {
+      if (!['en', 'ao'].includes(lang)) return;
+      this.currentLang = lang;
+      localStorage.setItem('amoo_lang', lang);
+      this.applyLanguage();
+      // Re-render components that might have dynamic text or state
+      if (typeof renderNavbar === 'function') {
+        renderNavbar();
+      }
+    } catch (e) {
+      console.error('[Amoo Lang] Failed to set language:', e);
+    }
+  },
+
+  applyLanguage() {
+    try {
+      // 1. Scan and update all elements with data-en/data-ao attributes
+      const elements = document.querySelectorAll('[data-en], [data-ao]');
+      elements.forEach(el => {
+        try {
+          const enText = el.getAttribute('data-en');
+          const aoText = el.getAttribute('data-ao');
+          
+          if (this.currentLang === 'ao') {
+            // Use Afaan Oromoo if available; fallback to English if completely missing
+            if (aoText !== null && aoText !== undefined && aoText.trim() !== '') {
+              el.textContent = aoText;
+            } else if (enText !== null) {
+              el.textContent = enText;
+            }
+          } else {
+            // Default to English
+            if (enText !== null) {
+              el.textContent = enText;
+            }
+          }
+        } catch (elError) {
+          console.warn('[Amoo Lang] Failed to translate specific element:', el, elError);
+        }
+      });
+
+      // 2. Scan and update placeholder attributes
+      const inputs = document.querySelectorAll('[data-placeholder-en], [data-placeholder-ao]');
+      inputs.forEach(input => {
+        try {
+          const enPlaceholder = input.getAttribute('data-placeholder-en');
+          const aoPlaceholder = input.getAttribute('data-placeholder-ao');
+          
+          if (this.currentLang === 'ao') {
+            if (aoPlaceholder !== null && aoPlaceholder !== undefined && aoPlaceholder.trim() !== '') {
+              input.placeholder = aoPlaceholder;
+            } else if (enPlaceholder !== null) {
+              input.placeholder = enPlaceholder;
+            }
+          } else {
+            if (enPlaceholder !== null) {
+              input.placeholder = enPlaceholder;
+            }
+          }
+        } catch (inputError) {
+          console.warn('[Amoo Lang] Failed to translate specific placeholder:', input, inputError);
+        }
+      });
+    } catch (e) {
+      console.error('[Amoo Lang] Critical failure during language translation scan:', e);
+    }
+  }
+};
+
 // Global page load tasks
 window.addEventListener('DOMContentLoaded', () => {
   // Read and apply stored theme
@@ -885,4 +1043,11 @@ window.addEventListener('DOMContentLoaded', () => {
   // Render headers and footers
   renderNavbar();
   renderFooter();
+
+  // Initialize bilingual engine
+  try {
+    window.amooLang.init();
+  } catch(e) {
+    console.error('[Amoo Lang] Startup error:', e);
+  }
 });

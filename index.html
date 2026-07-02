@@ -55,11 +55,11 @@
             <span class="text-yellow-600 dark:text-yellow-400 font-extrabold font-mono">200 ETB / Course</span>
           </div>
 
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight font-display">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight font-display" data-en="Master Premium Digital Skills with AMOO ACADEMY" data-ao="Dandeettiiwwan Diijitaalaa Filatamoo AMOO ACADEMY waliin Gabbifadhaa">
             Master Premium Digital Skills with <span class="text-green-600 dark:text-green-400">AMOO ACADEMY</span>
           </h1>
 
-          <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0" data-en="Launch your high-paying professional career with localized expert training based in Harar, Ethiopia. All interactive courses are set at a flat, accessible rate of 200 ETB only. Gain certificates, complete local exercises, and build a spectacular portfolio." data-ao="Eebbifamaa ta'uun hojii keessan jalqabaa hojjettoota ogummaa Harar, Itoophiyaa keessatti dandeettii dabalataa baradhaa. Koorsiiwwan hundi kaffaltii 200 ETB qofa. Waraqaa ragaa fudhadhaa, hojii dandeettii keessanii uumaa.">
             Launch your high-paying professional career with localized expert training based in Harar, Ethiopia. All interactive courses are set at a flat, accessible rate of <strong class="text-gray-900 dark:text-white">200 ETB only</strong>. Gain certificates, complete local exercises, and build a spectacular portfolio.
           </p>
 
@@ -68,8 +68,8 @@
             <div class="pl-3 text-gray-400">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <input id="hero-search-input" type="text" placeholder="What skill do you want to learn today?" class="w-full bg-transparent border-0 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none">
-            <button id="hero-search-btn" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-all shadow-md">
+            <input id="hero-search-input" type="text" placeholder="What skill do you want to learn today?" data-placeholder-en="What skill do you want to learn today?" data-placeholder-ao="Dandeettii kam barachuu barbaaddan har'a?" class="w-full bg-transparent border-0 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none">
+            <button id="hero-search-btn" data-en="Explore" data-ao="Barbaadi" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-all shadow-md">
               Explore
             </button>
           </div>
@@ -401,50 +401,55 @@
     // PAGE SPECIFIC LOGIC FOR INDEX.HTML
     window.addEventListener('DOMContentLoaded', () => {
       // 1. Render Featured Courses
-      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
-      const grid = document.getElementById('courses-grid');
-      
-      if (grid && courses.length > 0) {
-        // Show first 3 courses as featured
-        const featured = courses.slice(0, 3);
-        grid.innerHTML = featured.map(course => `
-          <div class="premium-glow-hover rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-full">
-            <div class="relative h-48 overflow-hidden">
-              <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" referrerpolicy="no-referrer">
-              <div class="absolute top-4 left-4 px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/95 backdrop-blur-md text-xs font-bold text-green-700 dark:text-green-400 border border-green-500/20">
-                ${course.category}
+      function renderFeaturedCourses() {
+        const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+        const grid = document.getElementById('courses-grid');
+        
+        if (grid && courses.length > 0) {
+          // Show first 3 courses as featured
+          const featured = courses.slice(0, 3);
+          grid.innerHTML = featured.map(course => `
+            <div class="premium-glow-hover rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-full">
+              <div class="relative h-48 overflow-hidden">
+                <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" referrerpolicy="no-referrer">
+                <div class="absolute top-4 left-4 px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/95 backdrop-blur-md text-xs font-bold text-green-700 dark:text-green-400 border border-green-500/20">
+                  ${course.category}
+                </div>
+                <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-green-600 text-white text-sm font-extrabold shadow-lg">
+                  ${course.price} ETB
+                </div>
               </div>
-              <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-green-600 text-white text-sm font-extrabold shadow-lg">
-                ${course.price} ETB
+              
+              <div class="p-6 flex flex-col flex-grow gap-3">
+                <div class="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 font-mono">
+                  <span>${course.duration}</span>
+                  <span class="text-yellow-500 flex items-center gap-1">★ ${course.rating}</span>
+                </div>
+                
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white leading-snug line-clamp-1 font-display">
+                  ${course.title}
+                </h3>
+                
+                <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                  ${course.description}
+                </p>
+                
+                <div class="mt-auto pt-4 border-t border-gray-50 dark:border-slate-700/50 grid grid-cols-2 gap-3">
+                  <a href="./course-details.html?id=${course.id}" class="py-2 text-center text-xs font-bold text-green-600 hover:text-green-700 dark:text-green-400 hover:underline">
+                    Course Details
+                  </a>
+                  <a href="./enroll.html?course=${course.id}" class="py-2.5 px-3 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-bold rounded-lg shadow-sm transition-colors">
+                    Enroll Now
+                  </a>
+                </div>
               </div>
             </div>
-            
-            <div class="p-6 flex flex-col flex-grow gap-3">
-              <div class="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 font-mono">
-                <span>${course.duration}</span>
-                <span class="text-yellow-500 flex items-center gap-1">★ ${course.rating}</span>
-              </div>
-              
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white leading-snug line-clamp-1 font-display">
-                ${course.title}
-              </h3>
-              
-              <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                ${course.description}
-              </p>
-              
-              <div class="mt-auto pt-4 border-t border-gray-50 dark:border-slate-700/50 grid grid-cols-2 gap-3">
-                <a href="./course-details.html?id=${course.id}" class="py-2 text-center text-xs font-bold text-green-600 hover:text-green-700 dark:text-green-400 hover:underline">
-                  Course Details
-                </a>
-                <a href="./enroll.html?course=${course.id}" class="py-2.5 px-3 bg-green-600 hover:bg-green-700 text-white text-center text-xs font-bold rounded-lg shadow-sm transition-colors">
-                  Enroll Now
-                </a>
-              </div>
-            </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
+
+      renderFeaturedCourses();
+      window.addEventListener('amoo-db-synced', renderFeaturedCourses);
 
       // 2. Search inputs logic
       const searchBtn = document.getElementById('hero-search-btn');
@@ -523,4 +528,4 @@
     });
   </script>
 </body>
-</html>
+</html></body>

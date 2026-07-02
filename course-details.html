@@ -195,7 +195,7 @@
       }
 
       // Fetch course from local database
-      const courses = JSON.parse(localStorage.getItem('amoo_courses') || '[]');
+      const courses = JSON.parse(localStorage.getItem('courses') || '[]');
       const course = courses.find(c => c.id === courseId);
 
       if (!course) {
@@ -220,7 +220,32 @@
       // Sidebar mappings
       document.getElementById('sidebar-duration').textContent = course.duration;
       document.getElementById('sidebar-level').textContent = course.level;
-      document.getElementById('enroll-sidebar-btn').href = `./enroll.html?course=${course.id}`;
+      
+      const enrollBtn = document.getElementById('enroll-sidebar-btn');
+      const enr = typeof getUserEnrollment === 'function' ? getUserEnrollment(course.id) : null;
+      if (enr) {
+        const pStat = (enr.payment_status || enr.status || 'Pending').toLowerCase();
+        if (pStat === 'approved') {
+          enrollBtn.href = `./demo.html?course=${course.id}`;
+          enrollBtn.textContent = 'Access Course (Go to Playroom)';
+          enrollBtn.className = 'w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl shadow-lg transition-colors text-center text-sm block';
+        } else if (pStat === 'pending') {
+          enrollBtn.removeAttribute('href');
+          enrollBtn.textContent = 'Payment Review Pending';
+          enrollBtn.className = 'w-full py-3.5 bg-yellow-500 text-white font-extrabold rounded-2xl shadow-lg cursor-help text-center text-sm block';
+          enrollBtn.onclick = () => {
+            showToast('Amanuel is currently verifying your payment. It takes up to 2 hours!', 'info');
+          };
+        } else {
+          enrollBtn.href = `./enroll.html?course=${course.id}`;
+          enrollBtn.textContent = 'Retry Enrollment';
+          enrollBtn.className = 'w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-2xl shadow-lg transition-colors text-center text-sm block';
+        }
+      } else {
+        enrollBtn.href = `./enroll.html?course=${course.id}`;
+        enrollBtn.textContent = 'Enroll in Program';
+        enrollBtn.className = 'w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-2xl shadow-lg shadow-green-500/20 transition-all text-center text-sm block transform hover:-translate-y-0.5';
+      }
 
       // Populate benefits
       const benefitsGrid = document.getElementById('course-benefits-list');
