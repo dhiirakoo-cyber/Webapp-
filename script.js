@@ -710,21 +710,21 @@ function renderNavbar() {
   } else {
     authHtml = `
       <div class="flex items-center gap-3">
-        <a id="nav-login-btn" href="./login.html" data-en="Sign In" data-ao="Seeni" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">
+        <a id="nav-login-btn" href="./login.html" data-en="Sign In" data-ao="Seeni" class="amoo-nav-btn-signin">
           ${isAo ? 'Seeni' : 'Sign In'}
         </a>
-        <a id="nav-register-btn" href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="px-5 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm hover:shadow transition-all duration-150 transform hover:-translate-y-0.5">
+        <a id="nav-register-btn" href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="amoo-nav-btn-joinfree">
           ${isAo ? 'Miseensomi' : 'Join Free'}
         </a>
       </div>
     `;
 
     mobileAuthHtml = `
-      <div class="flex flex-col gap-2 p-4 border-t border-gray-100 dark:border-slate-800">
-        <a href="./login.html" data-en="Sign In" data-ao="Seeni" class="w-full py-2.5 text-center font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg text-sm border border-gray-200 dark:border-slate-700">
+      <div class="flex flex-col gap-2.5 p-4 border-t border-gray-100 dark:border-slate-800/80">
+        <a href="./login.html" data-en="Sign In" data-ao="Seeni" class="w-full py-2.5 text-center font-bold text-green-600 hover:text-white hover:bg-green-600 dark:text-green-400 dark:hover:bg-green-500 rounded-xl text-sm border-2 border-green-500/30 dark:border-green-400/20 transition-all">
           ${isAo ? 'Seeni' : 'Sign In'}
         </a>
-        <a href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="w-full py-2.5 text-center font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm shadow-sm">
+        <a href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="w-full py-2.5 text-center font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm shadow-md transition-all">
           ${isAo ? 'Miseensomi' : 'Join Free'}
         </a>
       </div>

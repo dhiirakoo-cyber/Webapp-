@@ -35,7 +35,96 @@
 <body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
 
   <!-- Header Render Target -->
-  <header id="main-header"></header>
+  <header id="main-header" class="sticky top-0 z-50 w-full glass-header border-b border-gray-200 dark:border-slate-800/80 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Brand -->
+        <a id="nav-brand" href="./index.html" class="flex items-center gap-3 group focus:outline-none">
+          <div class="h-10 w-10 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20 group-hover:scale-105 transition-transform duration-200">
+            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">AMOO</span>
+            <span class="text-xs font-bold tracking-widest text-green-600 dark:text-green-400 -mt-1 uppercase">ACADEMY</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8">
+          <a id="nav-home" href="./index.html" data-en="Home" data-ao="Dhaabbata" class="text-sm font-semibold transition-colors duration-200 text-green-600 dark:text-green-400 font-bold border-b-2 border-green-500 py-1">Home</a>
+          <a id="nav-courses" href="./courses.html" data-en="Courses" data-ao="Koorsiiwwan" class="text-sm font-semibold transition-colors duration-200 text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400">Courses</a>
+          <a id="nav-interactive-demo" href="./demo.html" data-en="Interactive Demo" data-ao="Dimoo" class="text-sm font-semibold transition-colors duration-200 text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400">Interactive Demo</a>
+        </nav>
+
+        <!-- Right Side: Dark Mode & Auth -->
+        <div class="hidden md:flex items-center gap-5">
+          <!-- Bento Language Toggle Button -->
+          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+            <button id="lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30">
+              EN
+            </button>
+            <button id="lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              AO
+            </button>
+          </div>
+
+          <!-- Dark Mode Toggle Button -->
+          <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors focus:outline-none">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          </button>
+          
+          <!-- CTA/Auth Section -->
+          <div class="flex items-center gap-3">
+            <a id="nav-login-btn" href="./login.html" data-en="Sign In" data-ao="Seeni" class="amoo-nav-btn-signin">Sign In</a>
+            <a id="nav-register-btn" href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="amoo-nav-btn-joinfree">Join Free</a>
+          </div>
+        </div>
+
+        <!-- Mobile Controls Toggle -->
+        <div class="flex items-center gap-3 md:hidden">
+          <!-- Mobile Bento Language Toggle -->
+          <div class="flex items-center p-0.5 bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-inner">
+            <button id="mob-lang-toggle-en" onclick="try { window.amooLang.setLanguage('en') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm border border-gray-200/30 dark:border-slate-600/30">
+              EN
+            </button>
+            <button id="mob-lang-toggle-ao" onclick="try { window.amooLang.setLanguage('ao') } catch(e) {}" class="px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg transition-all duration-200 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              AO
+            </button>
+          </div>
+
+          <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-gray-300 transition-colors">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          </button>
+          
+          <button id="mobile-menu-toggle" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-800 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Content -->
+    <div id="mobile-drawer" class="hidden md:hidden absolute left-0 w-full bg-white dark:bg-slate-900 shadow-2xl border-b border-gray-200 dark:border-slate-800 flex flex-col pt-2 pb-4 px-4 z-40 transition-all duration-200 ease-out">
+      <nav class="flex flex-col gap-1 mb-4">
+        <a href="./index.html" data-en="Home" data-ao="Dhaabbata" class="px-4 py-3 rounded-lg text-base font-semibold border-l-4 transition-all duration-150 bg-green-50 text-green-700 border-green-500 dark:bg-slate-800 dark:text-green-400">Home</a>
+        <a href="./courses.html" data-en="Courses" data-ao="Koorsiiwwan" class="px-4 py-3 rounded-lg text-base font-semibold border-l-4 transition-all duration-150 text-gray-600 hover:bg-gray-50 border-transparent dark:text-gray-300 dark:hover:bg-slate-800">Courses</a>
+        <a href="./demo.html" data-en="Interactive Demo" data-ao="Dimoo" class="px-4 py-3 rounded-lg text-base font-semibold border-l-4 transition-all duration-150 text-gray-600 hover:bg-gray-50 border-transparent dark:text-gray-300 dark:hover:bg-slate-800">Interactive Demo</a>
+      </nav>
+      <div class="flex flex-col gap-2.5 p-4 border-t border-gray-100 dark:border-slate-800/80">
+        <a href="./login.html" data-en="Sign In" data-ao="Seeni" class="w-full py-2.5 text-center font-bold text-green-600 hover:text-white hover:bg-green-600 dark:text-green-400 dark:hover:bg-green-500 rounded-xl text-sm border-2 border-green-500/30 dark:border-green-400/20 transition-all">
+          Sign In
+        </a>
+        <a href="./register.html" data-en="Join Free" data-ao="Miseensomi" class="w-full py-2.5 text-center font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm shadow-md transition-all">
+          Join Free
+        </a>
+      </div>
+    </div>
+  </header>
 
   <!-- Hero Section -->
   <section id="hero" class="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-28 border-b border-gray-100 dark:border-slate-800/50">

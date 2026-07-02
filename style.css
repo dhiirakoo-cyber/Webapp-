@@ -15,6 +15,9 @@ html, body {
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
   transition: background-color 0.3s ease, color 0.3s ease;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
 }
 
 h1, h2, h3, h4, h5, h6, .font-display {
@@ -151,7 +154,367 @@ h1, h2, h3, h4, h5, h6, .font-display {
   border: 1px solid rgba(252, 209, 22, 0.3);
 }
 
+/* Navigation Buttons Aesthetic */
+.amoo-nav-btn-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #16a34a; /* primary-600 */
+  background-color: transparent;
+  border: 2px solid #22c55e; /* primary-500 */
+  border-radius: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.amoo-nav-btn-signin:hover {
+  color: #ffffff !important;
+  background-color: #16a34a;
+  border-color: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+.dark .amoo-nav-btn-signin {
+  color: #4ade80; /* green-400 */
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.dark .amoo-nav-btn-signin:hover {
+  color: #ffffff !important;
+  background-color: #22c55e;
+  border-color: #22c55e;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+.amoo-nav-btn-joinfree {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  background-color: #16a34a; /* primary-600 */
+  border: 2px solid #16a34a;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.amoo-nav-btn-joinfree:hover {
+  background-color: #15803d; /* primary-700 */
+  border-color: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(22, 163, 74, 0.3);
+}
+
+.dark .amoo-nav-btn-joinfree {
+  background-color: #22c55e;
+  border-color: #22c55e;
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
+}
+
+.dark .amoo-nav-btn-joinfree:hover {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  box-shadow: 0 6px 15px rgba(34, 197, 94, 0.35);
+}
+
 /* Notification Container position */
 #toast-container {
   z-index: 9999;
 }
+
+/* ==========================================
+   ADVANCED RESPONSIVE DESIGN SYSTEM
+   Media Queries for Mobile, Tablet, & Desktop
+   ========================================== */
+
+/* 1. FLUID TYPOGRAPHY & LAYOUT UTILITIES (ALL VIEWPORTS) */
+.responsive-grid {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.responsive-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Safe image wrapper to prevent aspect-ratio breakage */
+.responsive-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  width: 100%;
+}
+
+.responsive-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* ==========================================
+   MOBILE DEVICES (max-width: 640px)
+   ========================================== */
+@media screen and (max-width: 640px) {
+  /* Dynamic font scaling to prevent overlaps */
+  h1 {
+    font-size: 2.15rem !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+  }
+  
+  h2 {
+    font-size: 1.65rem !important;
+    line-height: 1.25 !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Safe CSS Grid vertical stacking for large layout grids (excluding grid-cols-2 for perfect 2-column stats) */
+  .grid-cols-3, .grid-cols-4, .grid-cols-12, .lg\:grid-cols-12 {
+    grid-template-columns: 1fr !important;
+    gap: 1.75rem !important;
+  }
+
+  /* Centering key CTA actions and texts on mobile */
+  .hero-content-text {
+    text-align: center !important;
+    align-items: center !important;
+  }
+
+  .mobile-center {
+    justify-content: center !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Custom mobile button paddings and layouts */
+  .amoo-nav-btn-signin,
+  .amoo-nav-btn-joinfree {
+    width: 100%;
+    padding: 0.75rem 1rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  /* Mobile container spacing */
+  section {
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  /* Adjust card lists and padding for smaller screen widths */
+  .p-6, .p-8 {
+    padding: 1.25rem !important;
+  }
+
+  .gap-8 {
+    gap: 1.5rem !important;
+  }
+
+  /* Hamburger menu and drawer visibility adjustments */
+  #mobile-drawer {
+    display: flex !important;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  #mobile-drawer.hidden {
+    display: none !important;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  /* Adjust course images height */
+  .course-card-img {
+    height: 160px !important;
+  }
+
+  /* Responsive tables for transaction logs (admin panel) */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid rgba(156, 163, 175, 0.15);
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    padding: 0.5rem;
+  }
+
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50% !important;
+    text-align: right !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+}
+
+/* ==========================================
+   EXTRA-NARROW MOBILE PORTRAITS (max-width: 480px)
+   ========================================== */
+@media screen and (max-width: 480px) {
+  /* Hero search box layout override to prevent input & button horizontal overflow */
+  #hero .flex.items-center.gap-2,
+  .hero-search-box {
+    flex-direction: column !important;
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+    border-radius: 1.25rem !important;
+  }
+
+  #hero-search-input {
+    width: 100% !important;
+    padding-left: 0.5rem !important;
+    text-align: center !important;
+  }
+
+  #hero-search-btn {
+    width: 100% !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  /* Hide inner icon to save space on extra small viewports */
+  #hero .flex.items-center.gap-2 svg,
+  .hero-search-box svg {
+    display: none !important;
+  }
+}
+
+/* ==========================================
+   SUPER-NARROW PHONES (max-width: 375px)
+   ========================================== */
+@media screen and (max-width: 375px) {
+  /* Scaled-down brand title to prevent mobile layout header breakage */
+  #nav-brand span.text-lg {
+    font-size: 0.9rem !important;
+  }
+  #nav-brand span.text-xs {
+    font-size: 0.6rem !important;
+    margin-top: -2px !important;
+  }
+  #nav-brand div.h-10 {
+    height: 1.85rem !important;
+    width: 1.85rem !important;
+  }
+  #nav-brand div.h-10 svg {
+    height: 1.15rem !important;
+    width: 1.15rem !important;
+  }
+
+  /* Micro-header gaps */
+  .flex.items-center.gap-3.md\:hidden {
+    gap: 0.35rem !important;
+  }
+
+  /* Micro-language selector */
+  #mob-lang-toggle-en, #mob-lang-toggle-ao {
+    padding: 0.15rem 0.35rem !important;
+    font-size: 0.55rem !important;
+    letter-spacing: 0.05em !important;
+  }
+}
+
+/* ==========================================
+   TABLET DEVICES (min-width: 641px) and (max-width: 1024px)
+   ========================================== */
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+  /* Fluid intermediate sizes */
+  h1 {
+    font-size: 2.85rem !important;
+    line-height: 1.15 !important;
+  }
+
+  h2 {
+    font-size: 2.15rem !important;
+  }
+
+  /* Adjust grid columns to a comfortable dual-column layout (avoid single-column and ultra squeezed 3-4 columns) */
+  .grid-cols-3, .grid-cols-4, .lg\:grid-cols-12 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Header adjustments for medium screens */
+  .max-w-7xl {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  /* Perfect aspect scaling for illustrations and banners */
+  .course-card-img {
+    height: 180px !important;
+  }
+
+  /* Balanced padding */
+  section {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  /* Smooth interactive item scaling */
+  .premium-glow-hover:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ==========================================
+   DESKTOP & LARGE MONITORS (min-width: 1025px)
+   ========================================== */
+@media screen and (min-width: 1025px) {
+  /* Perfect desktop layout */
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  /* Fluid typography max thresholds */
+  h1 {
+    font-size: 3.5rem !important;
+  }
+
+  /* Horizontal layout assurance */
+  .desktop-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+}
+
