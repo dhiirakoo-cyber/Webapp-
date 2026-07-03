@@ -1230,9 +1230,9 @@ function renderOverviewPanel(container, user, userEnrollments, isAo) {
             <button onclick="simulateLearning('${e.courseId}', 25)" class="px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-500/10 dark:text-green-400 text-xs font-bold rounded-lg border border-green-500/10 hover:border-green-500/30 transition-all">
               📚 Study (+25% Progress)
             </button>
-            <a href="./course-details.html?id=${e.courseId}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5">
+            <button onclick="openPurchaseModal('${e.courseId}')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
               Continue Learning →
-            </a>
+            </button>
           </div>
         </div>
       `;
@@ -1512,7 +1512,7 @@ function drawCatalogGrid(userEnrollments) {
       `;
     } else {
       actionButton = `
-        <button onclick="enrollFromDashboard('${c.id}')" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5">
+        <button onclick="openPurchaseModal('${c.id}')" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
           🛒 Enroll (200 ETB)
         </button>
       `;
@@ -1983,4 +1983,339 @@ function injectSimulationWidget() {
     };
   }
 }
+
+// ====================================================
+// COMPLETE PURCHASE MODAL SYSTEM (AMOO ACADEMY)
+// ====================================================
+
+/**
+ * Opens a highly polished, responsive purchase modal for any selected course.
+ * Shows direct transfer channels (Telebirr, CBE Account) with copy actions
+ * and allows uploading verified screenshots (max 5MB, PNG/JPG).
+ */
+window.openPurchaseModal = function(courseId) {
+  // 1. Resolve course details from database cache or default seeds
+  let courses = [];
+  try {
+    courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  } catch(e) {
+    console.error('Failed to load courses for purchase modal', e);
+  }
+  
+  if (!Array.isArray(courses) || courses.length === 0) {
+    courses = typeof DEFAULT_COURSES !== 'undefined' ? DEFAULT_COURSES : [];
+  }
+
+  const course = courses.find(c => c.id === courseId) || courses[0];
+  if (!course) {
+    showToast('Course program not found.', 'error');
+    return;
+  }
+
+  // 2. Remove any pre-existing instance of the modal
+  let modal = document.getElementById('purchase-modal');
+  if (modal) modal.remove();
+
+  // 3. Create fresh backdrop wrapper
+  modal = document.createElement('div');
+  modal.id = 'purchase-modal';
+  modal.className = 'fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in';
+
+  const user = getLoggedUser();
+  const showAuthFields = !user;
+
+  // 4. Inject professional, responsive card layout
+  modal.innerHTML = `
+    <div class="relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-150 dark:border-slate-800 p-6 sm:p-8 overflow-y-auto max-h-[90vh] custom-scroll transform transition-all duration-300">
+      <!-- Background graphical glow -->
+      <div class="absolute right-0 top-0 h-32 w-32 rounded-full bg-green-500/5 blur-2xl pointer-events-none"></div>
+
+      <!-- Close and Title Header -->
+      <div class="flex items-center justify-between border-b border-gray-150 dark:border-slate-800 pb-4 mb-5 relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20 shrink-0">
+            <svg class="h-5.5 w-5.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11V9a5 5 0 00-10 0v1a3 3 0 003 3h2.7m12.4 0h2.7a3 3 0 003-3v-1a5 5 0 00-10 0v2a13.91 13.91 0 001.354 5.34l.054.09m-3.44-2.04C13.991 17.799 15 14.517 15 11" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white font-display leading-tight">Complete Course Purchase</h3>
+            <span class="text-[10px] text-green-600 dark:text-green-400 font-bold tracking-widest uppercase font-mono">Amoo Academy verified enrollment</span>
+          </div>
+        </div>
+        <button onclick="closePurchaseModal()" class="p-1 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-950 dark:hover:bg-slate-800 dark:hover:text-white transition-all focus:outline-none cursor-pointer">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <!-- Course Order Card -->
+      <div class="flex items-center gap-4 bg-gray-50/50 dark:bg-slate-900/60 p-4 rounded-2xl border border-gray-100 dark:border-slate-800/80 mb-5">
+        <img src="${course.image}" alt="${course.title}" class="h-14 w-14 object-cover rounded-xl border border-gray-200/50 dark:border-slate-700 shrink-0">
+        <div class="min-w-0 flex-grow">
+          <span class="text-[9px] font-extrabold text-green-600 dark:text-green-400 uppercase tracking-widest font-mono">${course.category}</span>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate leading-snug mt-0.5">${course.title}</h4>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span class="text-base font-extrabold text-gray-900 dark:text-white font-display">${course.price}</span>
+            <span class="text-xs font-bold text-green-600 dark:text-green-400">ETB</span>
+            <span class="text-[10px] text-gray-400 font-semibold ml-2">• Flat Rate • Lifetime Access</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank & Telebirr Transfer Coordinates -->
+      <div class="flex flex-col gap-3 mb-5">
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Send exactly ${course.price} ETB payment:</span>
+        
+        <!-- Telebirr coordinates -->
+        <div class="p-3.5 rounded-2xl bg-green-500/5 dark:bg-green-500/5 border border-green-500/10 flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <span class="text-[9px] font-extrabold text-green-700 dark:text-green-400 uppercase tracking-widest block">📱 Telebirr Mobile Wallet</span>
+            <span class="font-mono text-sm font-extrabold text-gray-950 dark:text-white block mt-1 tracking-wider">0967145146</span>
+            <span class="text-[10px] text-gray-500 dark:text-gray-400 block mt-0.5 truncate">Amanuel Ketema</span>
+          </div>
+          <button onclick="navigator.clipboard.writeText('0967145146'); showToast('Telebirr wallet copied!', 'success')" class="px-3 py-1.5 bg-green-600/10 hover:bg-green-600 hover:text-white text-green-600 dark:text-green-400 rounded-xl text-xs font-bold transition-all shrink-0 border border-green-500/10 cursor-pointer">
+            Copy
+          </button>
+        </div>
+
+        <!-- CBE coordinates -->
+        <div class="p-3.5 rounded-2xl bg-blue-500/5 dark:bg-blue-500/5 border border-blue-500/10 flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <span class="text-[9px] font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest block">🏦 Commercial Bank of Ethiopia (CBE)</span>
+            <span class="font-mono text-sm font-extrabold text-gray-950 dark:text-white block mt-1 tracking-wider">1000755124701</span>
+            <span class="text-[10px] text-gray-500 dark:text-gray-400 block mt-0.5 truncate">Amanuel Dassale</span>
+          </div>
+          <button onclick="navigator.clipboard.writeText('1000755124701'); showToast('CBE account copied!', 'success')" class="px-3 py-1.5 bg-blue-600/10 hover:bg-blue-600 hover:text-white text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold transition-all shrink-0 border border-blue-500/10 cursor-pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <!-- Visitor Information form (if not authenticated) -->
+      ${showAuthFields ? `
+        <div class="flex flex-col gap-3 mb-5 p-4 rounded-2xl border border-gray-150 dark:border-slate-800 bg-gray-50/40 dark:bg-slate-900/40">
+          <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Student Credentials</span>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[9px] font-bold text-gray-500 uppercase">Your Name</label>
+              <input type="text" id="purchase-student-name" required placeholder="Abel Solomon" class="px-3.5 py-2.5 text-xs rounded-xl bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500">
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[9px] font-bold text-gray-500 uppercase">Your Email</label>
+              <input type="email" id="purchase-student-email" required placeholder="abel@gmail.com" class="px-3.5 py-2.5 text-xs rounded-xl bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500">
+            </div>
+          </div>
+          <p class="text-[9px] text-gray-400">Fill in your contact information so Amanuel can link this receipt to your study account.</p>
+        </div>
+      ` : ''}
+
+      <!-- Screen Upload Section -->
+      <div class="flex flex-col gap-1.5 mb-6">
+        <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Upload screenshot receipt proof (PNG/JPG, max 5MB)</label>
+        
+        <div id="screenshot-dropzone" onclick="document.getElementById('purchase-screenshot').click()" class="border-2 border-dashed border-gray-200 dark:border-slate-800 hover:border-green-500 dark:hover:border-green-400 rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer bg-gray-50/50 dark:bg-slate-900/40 transition-colors">
+          <input type="file" id="purchase-screenshot" accept="image/png, image/jpeg" class="hidden">
+          
+          <div id="dropzone-prompt" class="flex flex-col items-center gap-2">
+            <div class="h-9 w-9 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-500 dark:text-gray-400">
+              <svg class="h-5.5 w-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </div>
+            <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Click or Drag transfer screenshot here</span>
+            <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-wider font-mono">PNG, JPG up to 5MB</span>
+          </div>
+
+          <div id="dropzone-success" class="hidden flex flex-col items-center gap-2">
+            <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400">
+              <svg class="h-5.5 w-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            </div>
+            <span id="uploaded-filename" class="text-xs font-extrabold text-green-600 dark:text-green-400 truncate max-w-xs px-2">payment_screenshot.png</span>
+            <span class="text-[9px] text-gray-400 font-semibold uppercase font-mono bg-green-100/40 dark:bg-green-500/10 px-2 py-0.5 rounded">Ready to verify</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submission Controls -->
+      <button onclick="submitPurchasePayment('${course.id}')" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-2xl shadow-lg shadow-green-500/10 hover:shadow-green-500/20 transition-all text-xs uppercase tracking-wider transform hover:-translate-y-0.5 cursor-pointer">
+        Submit Payment
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // 5. Setup Interactive Dropzone States
+  const fileInput = document.getElementById('purchase-screenshot');
+  const dropzone = document.getElementById('screenshot-dropzone');
+  const prompt = document.getElementById('dropzone-prompt');
+  const success = document.getElementById('dropzone-success');
+  const filenameEl = document.getElementById('uploaded-filename');
+
+  if (fileInput && dropzone) {
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('File size exceeds the 5MB maximum limit', 'error');
+          fileInput.value = '';
+          return;
+        }
+        if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+          showToast('Only PNG and JPG screenshots are supported', 'error');
+          fileInput.value = '';
+          return;
+        }
+        
+        // File is valid
+        filenameEl.textContent = file.name;
+        prompt.classList.add('hidden');
+        success.classList.remove('hidden');
+        showToast('Receipt screenshot attached!', 'success');
+      }
+    };
+
+    dropzone.ondragover = (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-green-500', 'bg-green-50/10');
+    };
+    dropzone.ondragleave = (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-green-500', 'bg-green-50/10');
+    };
+    dropzone.ondrop = (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-green-500', 'bg-green-50/10');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        fileInput.onchange();
+      }
+    };
+  }
+};
+
+window.closePurchaseModal = function() {
+  const modal = document.getElementById('purchase-modal');
+  if (modal) modal.remove();
+};
+
+window.submitPurchasePayment = function(courseId) {
+  const fileInput = document.getElementById('purchase-screenshot');
+  const user = getLoggedUser();
+
+  let name = "";
+  let email = "";
+
+  // 1. Validate student identification details
+  if (!user) {
+    const nameInput = document.getElementById('purchase-student-name');
+    const emailInput = document.getElementById('purchase-student-email');
+    if (!nameInput || !nameInput.value.trim() || !emailInput || !emailInput.value.trim()) {
+      showToast('Please specify your Name and Email to link enrollment', 'error');
+      return;
+    }
+    name = nameInput.value.trim();
+    email = emailInput.value.trim();
+  } else {
+    name = user.name;
+    email = user.email;
+  }
+
+  // 2. Validate receipt image attachment
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    showToast('Please upload a transfer receipt screenshot to complete purchase', 'error');
+    return;
+  }
+
+  // 3. Resolve targeted course details
+  let courses = [];
+  try {
+    courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  } catch(e) {}
+  
+  if (!courses.length && typeof DEFAULT_COURSES !== 'undefined') {
+    courses = DEFAULT_COURSES;
+  }
+
+  const course = courses.find(c => c.id === courseId) || courses[0];
+  if (!course) return;
+
+  // 4. Validate registration duplicate
+  const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+  const exists = enrollments.some(e => e.studentEmail.toLowerCase() === email.toLowerCase() && e.courseId === courseId);
+
+  if (exists) {
+    showToast('You are already enrolled or have a pending verification for this program.', 'info');
+    closePurchaseModal();
+    return;
+  }
+
+  // 5. Save enrollment transaction
+  const enrId = 'ENR-' + Math.floor(1000 + Math.random() * 9000);
+  const newEnrollment = {
+    id: enrId,
+    studentName: name,
+    studentEmail: email,
+    studentPhone: user ? (user.phone || '0911223344') : '0911223344',
+    courseId: course.id,
+    courseTitle: course.title,
+    courseName: course.title,
+    price: 200,
+    progress: 0,
+    paymentMethod: 'Screenshot Upload',
+    paymentDetails: 'screenshot_attached',
+    status: 'pending',
+    payment_status: 'Pending',
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  enrollments.push(newEnrollment);
+  localStorage.setItem('enrollments', JSON.stringify(enrollments));
+
+  // 6. Record transaction entry
+  const transactions = JSON.parse(localStorage.getItem('amoo_transactions') || '[]');
+  const newTxn = {
+    id: 'TXN-' + Math.floor(100000 + Math.random() * 900000) + '-CBE',
+    name: name,
+    email: email,
+    courseId: course.id,
+    courseTitle: course.title,
+    amount: course.price,
+    paymentMethod: 'Mobile Bank Screenshot',
+    status: 'Pending',
+    date: new Date().toISOString().split('T')[0]
+  };
+  transactions.push(newTxn);
+  localStorage.setItem('amoo_transactions', JSON.stringify(transactions));
+
+  // 7. Success cleanup and notification
+  closePurchaseModal();
+  showToast('Payment submitted for verification successfully! Amanuel will activate access shortly.', 'success');
+
+  // Trigger sync event to refresh catalog or tables
+  const customEvent = new Event('amoo-db-synced');
+  window.dispatchEvent(customEvent);
+
+  // If student is logged in, immediately update active workspace dashboard
+  if (isLoggedIn() && typeof renderDashboard === 'function') {
+    renderDashboard();
+  }
+};
+
+// Global Link Interceptor for enrollments across all pages (courses.html, course-details.html)
+window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (link && link.href) {
+      const href = link.getAttribute('href');
+      if (href && href.includes('enroll.html')) {
+        e.preventDefault();
+        const url = new URL(link.href, window.location.href);
+        const courseId = url.searchParams.get('course') || 'html-css';
+        window.openPurchaseModal(courseId);
+      }
+    }
+  });
+});
 
