@@ -289,15 +289,22 @@ window.amooDb = {
   async init() {
     console.log('[Amoo Db] Initializing dual-persistence database engine...');
     
+    // Hardcoded public Supabase URL and publishable anon key fallbacks
+    const DEFAULT_URL = 'https://sjdkozfltmx7bk4ph2ul.supabase.co';
+    const DEFAULT_KEY = 'sb_publishable_Z-8LuYQrGv1BmC7c3oNyCg_zojgZvdS';
+
+    const hasSavedConfig = !!localStorage.getItem('SUPABASE_URL');
+
     // 1. Load config from global window variables or client-side localStorage fallback (for GitHub Pages)
-    this.config.url = window.SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || '';
-    this.config.key = window.SUPABASE_KEY || localStorage.getItem('SUPABASE_KEY') || '';
+    this.config.url = window.SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || DEFAULT_URL;
+    this.config.key = window.SUPABASE_KEY || localStorage.getItem('SUPABASE_KEY') || DEFAULT_KEY;
 
     // 2. Validate config
     const isPlaceholderUrl = !this.config.url || this.config.url.includes('YOUR_SUPABASE_URL_AS_ITTI_GALCHI');
     
     if (isPlaceholderUrl) {
       this.status = 'offline';
+      this.isActive = false;
       console.log('[Amoo Db] No custom Supabase URL found. Running in Local Storage Mode.');
       this.updateAdminUI();
       return;
@@ -305,8 +312,9 @@ window.amooDb = {
 
     // 3. Initialize client
     if (typeof window.supabase === 'undefined') {
-      console.error('[Amoo Db] Supabase CDN library is missing from HTML head.');
-      this.status = 'error';
+      console.warn('[Amoo Db] Supabase CDN library is missing. Running in Local Storage Mode.');
+      this.status = 'offline';
+      this.isActive = false;
       this.updateAdminUI();
       return;
     }
@@ -318,16 +326,21 @@ window.amooDb = {
       console.log('[Amoo Db] Supabase Client initialized successfully!');
       
       // 4. Test connection and synchronize/seed tables
-      await this.syncAndSeed();
+      await this.syncAndSeed(hasSavedConfig);
     } catch (e) {
-      console.error('[Amoo Db] Failed to connect to Supabase', e);
-      this.status = 'error';
+      console.warn('[Amoo Db] Failed to connect to Supabase. Falling back to Local Storage Mode.', e);
+      if (hasSavedConfig) {
+        this.status = 'error';
+      } else {
+        this.status = 'offline';
+        this.isActive = false;
+      }
     }
 
     this.updateAdminUI();
   },
 
-  async syncAndSeed() {
+  async syncAndSeed(hasSavedConfig = false) {
     if (!this.isActive || !this.client) return;
 
     this.isSyncing = true;
@@ -339,14 +352,19 @@ window.amooDb = {
       
       if (errC || errU || errE) {
         const errorMsg = (errC?.message || errU?.message || errE?.message || '');
-        console.warn('[Amoo Db] Could not fetch some tables from Supabase. Tables might be missing:', errorMsg);
-        if (errorMsg.includes('relation') || errorMsg.includes('does not exist')) {
-          this.status = 'missing_tables';
-          this.isSyncing = false;
-          this.updateAdminUI();
-          return;
+        console.warn('[Amoo Db] Could not fetch some tables from Supabase:', errorMsg);
+        
+        if (hasSavedConfig) {
+          if (errorMsg.includes('relation') || errorMsg.includes('does not exist')) {
+            this.status = 'missing_tables';
+          } else {
+            this.status = 'error';
+          }
+        } else {
+          // If using the default credentials, fallback to offline state silently
+          this.status = 'offline';
+          this.isActive = false;
         }
-        this.status = 'error';
         this.isSyncing = false;
         this.updateAdminUI();
         return;
@@ -396,8 +414,13 @@ window.amooDb = {
         window.dispatchEvent(new CustomEvent('amoo-db-synced'));
       }
     } catch (e) {
-      console.error('[Amoo Db] Error during sync/seed operation', e);
-      this.status = 'error';
+      console.warn('[Amoo Db] Error during sync/seed operation:', e);
+      if (hasSavedConfig) {
+        this.status = 'error';
+      } else {
+        this.status = 'offline';
+        this.isActive = false;
+      }
       this.isSyncing = false;
     }
   },

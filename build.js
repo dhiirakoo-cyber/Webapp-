@@ -45,8 +45,8 @@ function build() {
     if (fs.existsSync(srcPath)) {
       if (file.endsWith('.html')) {
         let content = fs.readFileSync(srcPath, 'utf8');
-        const supabaseUrl = process.env.SUPABASE_URL || '';
-        const supabaseKey = process.env.SUPABASE_KEY || '';
+        const supabaseUrl = process.env.SUPABASE_URL || 'https://sjdkozfltmx7bk4ph2ul.supabase.co';
+        const supabaseKey = process.env.SUPABASE_KEY || 'sb_publishable_Z-8LuYQrGv1BmC7c3oNyCg_zojgZvdS';
         
         // Inject Supabase environment variables into the head
         content = content.replace(

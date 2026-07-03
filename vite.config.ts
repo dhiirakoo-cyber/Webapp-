@@ -15,8 +15,8 @@ export default defineConfig(() => {
       {
         name: 'inject-supabase-env',
         transformIndexHtml(html) {
-          const supabaseUrl = process.env.SUPABASE_URL || '';
-          const supabaseKey = process.env.SUPABASE_KEY || '';
+          const supabaseUrl = process.env.SUPABASE_URL || 'https://sjdkozfltmx7bk4ph2ul.supabase.co';
+          const supabaseKey = process.env.SUPABASE_KEY || 'sb_publishable_Z-8LuYQrGv1BmC7c3oNyCg_zojgZvdS';
           return html.replace(
             '</head>',
             `  <script>
