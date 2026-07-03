@@ -129,8 +129,9 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section id="hero" class="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-28 border-b border-gray-100 dark:border-slate-800/50">
+  <div id="visitor-view">
+    <!-- Hero Section -->
+    <section id="hero" class="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-28 border-b border-gray-100 dark:border-slate-800/50">
     <!-- Gradient background effects -->
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.green.100),theme(colors.transparent))] opacity-50 dark:opacity-20"></div>
     <div class="absolute top-0 right-1/4 -z-10 h-72 w-72 rounded-full bg-green-400/20 dark:bg-green-500/10 blur-3xl"></div>
@@ -482,6 +483,10 @@
       </div>
     </div>
   </section>
+  </div> <!-- /visitor-view -->
+
+  <!-- Dashboard Container Target -->
+  <div id="dashboard-view" class="hidden"></div>
 
   <!-- Footer Render Target -->
   <footer id="main-footer"></footer>
@@ -492,6 +497,11 @@
   <script>
     // PAGE SPECIFIC LOGIC FOR INDEX.HTML
     window.addEventListener('DOMContentLoaded', () => {
+      // Check and render Dashboard state if logged in
+      if (typeof checkDashboardState === 'function') {
+        checkDashboardState();
+      }
+
       // 1. Render Featured Courses
       function renderFeaturedCourses() {
         const courses = JSON.parse(localStorage.getItem('courses') || '[]');
